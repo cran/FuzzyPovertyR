@@ -1,0 +1,5126 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>FuzzyPovertyR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>$(document).ready(function(){
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
+});
+</script>
+<style type="text/css">
+.lightable-minimal {
+border-collapse: separate;
+border-spacing: 16px 1px;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-minimal td {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal th {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal thead tr:last-child th {
+border-bottom: 2px solid #00000050;
+empty-cells: hide;
+}
+.lightable-minimal tbody tr:first-child td {
+padding-top: 0.5em;
+}
+.lightable-minimal.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-minimal.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic {
+border-top: 0.16em solid #111111;
+border-bottom: 0.16em solid #111111;
+width: 100%;
+margin-bottom: 10px;
+margin: 10px 5px;
+}
+.lightable-classic tfoot tr td {
+border: 0;
+}
+.lightable-classic tfoot tr:first-child td {
+border-top: 0.14em solid #111111;
+}
+.lightable-classic caption {
+color: #222222;
+}
+.lightable-classic td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic thead tr:last-child th {
+border-bottom: 0.10em solid #111111;
+}
+.lightable-classic.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic-2 {
+border-top: 3px double #111111;
+border-bottom: 3px double #111111;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-classic-2 tfoot tr td {
+border: 0;
+}
+.lightable-classic-2 tfoot tr:first-child td {
+border-top: 3px double #111111;
+}
+.lightable-classic-2 caption {
+color: #222222;
+}
+.lightable-classic-2 td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic-2 th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic-2 tbody tr:last-child td {
+border-bottom: 3px double #111111;
+}
+.lightable-classic-2 thead tr:last-child th {
+border-bottom: 1px solid #111111;
+}
+.lightable-classic-2.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic-2.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #EEE;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+.lightable-material tfoot tr td {
+border: 0;
+}
+.lightable-material tfoot tr:first-child td {
+border-top: 1px solid #EEE;
+}
+.lightable-material th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+}
+.lightable-material td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+border-top: 1px solid #eeeeee;
+}
+.lightable-material.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #ddd;
+}
+.lightable-material-dark {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #FFFFFF12;
+border-collapse: collapse;
+margin-bottom: 10px;
+background-color: #363640;
+}
+.lightable-material-dark tfoot tr td {
+border: 0;
+}
+.lightable-material-dark tfoot tr:first-child td {
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF60;
+}
+.lightable-material-dark td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF;
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark.lightable-hover tbody tr:hover {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody tr:nth-child(even) {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material-dark.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #FFFFFF12;
+}
+.lightable-paper {
+width: 100%;
+margin-bottom: 10px;
+color: #444;
+}
+.lightable-paper tfoot tr td {
+border: 0;
+}
+.lightable-paper tfoot tr:first-child td {
+border-top: 1px solid #00000020;
+}
+.lightable-paper thead tr:last-child th {
+color: #666;
+vertical-align: bottom;
+border-bottom: 1px solid #00000020;
+line-height: 1.15em;
+padding: 10px 5px;
+}
+.lightable-paper td {
+vertical-align: middle;
+border-bottom: 1px solid #00000010;
+line-height: 1.15em;
+padding: 7px 5px;
+}
+.lightable-paper.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-paper.lightable-striped tbody tr:nth-child(even) {
+background-color: #00000008;
+}
+.lightable-paper.lightable-striped tbody td {
+border: 0;
+}
+</style>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">FuzzyPovertyR</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(FuzzyPovertyR)</span></code></pre></div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><code>FuzzyPovertyR</code> is a package for estimating fuzzy poverty
+indexes Broadly speaking, a fuzzy poverty index is an index that ranges
+in the set <span class="math inline">\(Q=[0,1]\)</span>. A fuzzy indexes
+assigns to each statistical unit a value in this interval according to a
+given membership function <span class="math inline">\(\mu(x_i)\in
+Q\)</span> where <span class="math inline">\(x\)</span> is a poverty
+predicate. The more the value of <span class="math inline">\(\mu\)</span> the more the individual is reagarded
+as “poor” with respect to the poverty predicate <span class="math inline">\(x\)</span>. In socio-economic surveys <span class="math inline">\(x\)</span> may be the equivalised disposable
+income, or expenditure. However, in principle <span class="math inline">\(x\)</span> may be a generic poverty predicate that
+the researcher needs to analyse, for example this could be a variable
+that relates to access to transports, services and other facilities.</p>
+<p>Below we distinguish between monetary and supplementary poverty
+indexes (or measures). A fuzzy monetary poverty measure is calculated
+over a <code>numeric</code> vector of length <span class="math inline">\(N\)</span> (the available sample size). A
+supplementary poverty index is calculated on a <code>data.frame</code>
+of items of a questionnaire that relates to other dimensions of poverty
+other than monetary.</p>
+<p>The dataset coming from the package is loaded in the environment
+with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(eusilc)</span></code></pre></div>
+</div>
+<div id="fuzzy-monetary-poverty-measures" class="section level2">
+<h2>Fuzzy Monetary poverty measures</h2>
+<p>The package lets the user choose among different membership functions
+trough the argument <code>fm</code> of the <code>fm_construct</code>
+function. The membership function available are</p>
+<ul>
+<li><code>fm=&quot;verma&quot;</code> (see <span class="citation">Betti and Verma
+(2008)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\begin{split}
+     \mu_i&amp;=\left(1-F^{(M)}_i\right)^{\alpha-1}\left(1-L^{(M)}_i\right)=\\
+    &amp;=\left(\frac{\sum_j w_j|x_j&gt; x_i}{\sum_j w_j|x_j&gt;
+x_1}\right)^{\alpha-1} \left(\frac{\sum_j w_jx_j|x_j&gt; x_i}{\sum_j
+w_jx_j|x_j&gt; x_1}\right)
+\end{split}
+\]</span></p>
+<p>where <span class="math inline">\(w_i\)</span> is the sampling weight
+of unit <span class="math inline">\(i\)</span>.</p>
+<ul>
+<li><code>fm=&quot;ZBM&quot;</code> (see <span class="citation">Zedini and Belhadj
+(2015)</span> and <span class="citation">Belhadj and Matoussi
+(2010)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\mu_Q(x_i) = \begin{cases}
+        1                                   &amp;   a \le x_i &lt; b\\
+        \frac{-x_i}{c-b} + \frac{c}{c-b}    &amp;   b \le x_i &lt; c\\
+        0                                   &amp;   x_i &lt; a \cup x_i
+\ge c\\
+    \end{cases}
+\]</span></p>
+<ul>
+<li><p><code>fm=&quot;belhadj&quot;</code> (see <span class="citation">Besma
+(2015)</span>)</p>
+<p><span class="math display">\[
+    \mu_Q(x_i) = \begin{cases}        1    &amp; y_i &lt;
+z_1\\        \mu^1 = 1-\frac{1}{2}\left(\frac{y_i-z_1}{z_1}\right)^b
+&amp; z_1 \le y_i &lt; z^{*}\\        \mu^2 =
+1-\frac{1}{2}\left(\frac{z_2 - y_i}{z_2}\right)^b   &amp; z^{*} \le y_i
+&lt; z_2\\        0     &amp; y_i \ge z_2    \end{cases}
+\]</span></p></li>
+</ul>
+<p><span class="math display">\[
+\mu_Q(x_i) = \begin{cases}
+        1                                                                       &amp;
+0 &lt; x_i &lt; z_{min} \\
+        \frac{-x_i}{z_{\max} - z_{\min}} + \frac{-z_{\max}}{z_{\max} -
+z_{\min}}        &amp; z_{min} \le x_i &lt; z_{max}\\
+        0                                                                       &amp;
+x_i \ge z_max
+    \end{cases}
+\]</span></p>
+<ul>
+<li><code>fm=&quot;chakravarty&quot;</code> (see <span class="citation">Chakravarty (2019)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\mu_Q(x_i) = \begin{cases}
+        1                           &amp; x_i = 0\\
+        \frac{z&#39;&#39; - x_i}{z&#39;&#39;}       &amp; 0 \le x_i &lt;
+z&#39;&#39;\\
+        0                           &amp; x_i \ge z&#39;&#39;
+    \end{cases}
+\]</span></p>
+<p>For each of the functions below the <code>breakdown</code> argument
+can be specified in case the user’s want to obtain estimates for given
+sub-domains.</p>
+<div id="verma" class="section level3">
+<h3>Verma</h3>
+<p>The computation of a fuzzy poverty index that uses the
+<code>fm=&quot;verma&quot;</code>argument goes trough the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Estimation of the Head Count Ratio (HCR). The package
+<code>FuzzyPovertyR</code> provides the function <code>HCR</code> to
+estimate the Head Count Ratio from data. It outputs a list of three
+elements: a classification of units into being poor or not poor, the
+poverty line, and the value itself.</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>hcr <span class="ot">=</span> <span class="fu">HCR</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">p =</span> <span class="fl">0.5</span>, <span class="at">q =</span> <span class="fl">0.6</span>)<span class="sc">$</span>HCR  <span class="co"># add poverty threshold</span></span></code></pre></div>
+<p>if needed, the package has a built-in function <code>eq_income</code>
+to calculate the equivalised disposable income using some equivalence
+scales.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># eq_income</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Construction of the Fuzzy Monetary measure.</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>verma <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.12</span>, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">alpha =</span> <span class="cn">NULL</span>, <span class="at">fm =</span> <span class="st">&quot;verma&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; Solving non linear equation: E[u] = HCR</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  1  Expected Value:  0.554 </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10  Expected Value:  0.094 </span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  9.491  Expected Value:  0.099 </span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.246  Expected Value:  0.168 </span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  8.18  Expected Value:  0.113 </span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.624  Expected Value:  0.12 </span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.658  Expected Value:  0.12 </span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; Done.</span></span></code></pre></div>
+<p>When <code>alpha = NULL</code> (the default) this function solves a
+non-linear equation finding the value <span class="math inline">\(\alpha\)</span> in <code>interval</code> that
+equates the expected value of the poverty measure to the Head Count
+Ratio calculated above (see #eq-betti2006). This can be avoided by
+specifying a numeric value of <span class="math inline">\(\alpha\)</span>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>verma <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">alpha =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p>The result of <code>fm_construct</code> using <code>fm=&quot;verma&quot;</code>
+is a list containing</p>
+<ul>
+<li>a <code>data.frame</code> of individuals’ membership functions
+sorted in descending order (i.e. from most poor to least poor)</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">head</span>(verma<span class="sc">$</span>results)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;    ID predicate   weight        mu</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; 1 586  578.9151 511.3717 1.0000000</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; 2  99  597.6825 362.4625 0.9986416</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 3  61  610.2311 145.1222 0.9980946</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 4 558  652.4766 279.7525 0.9970197</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 5 674  659.5990 353.9261 0.9956560</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 6 874  680.5776 195.8426 0.9948945</span></span></code></pre></div>
+<ul>
+<li>The estimated FM measure (note that this equals the HCR if
+<code>breakdown=NULL</code>). However, one can obtain estimates for
+sub-domains using the <code>breakdown</code> argument as follows</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>verma.break <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.12</span>, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">alpha =</span> <span class="cn">NULL</span>, <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; Solving non linear equation: E[u] = HCR</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  1  Expected Value:  0.554 </span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10  Expected Value:  0.094 </span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  9.491  Expected Value:  0.099 </span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.246  Expected Value:  0.168 </span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  8.18  Expected Value:  0.113 </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.624  Expected Value:  0.12 </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.658  Expected Value:  0.12 </span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; Done.</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>verma.break<span class="sc">$</span>estimate</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt;          a          b          c          d          e          f          g </span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; 0.08027737 0.11061018 0.22469186 0.18454800 0.18848498 0.14126900 0.07918052 </span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;          h          i          j          k          l          m          n </span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; 0.14590890 0.15256575 0.13413125 0.08294850 0.12533467 0.06791354 0.14998610 </span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;          o          p          q          r          s          t          u </span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 0.05268784 0.06786751 0.06878771 0.20840298 0.02183280 0.20446061 0.10647146 </span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;          v          w          x          y          z </span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; 0.10469314 0.11854581 0.14546229 0.09787430 0.06966577</span></span></code></pre></div>
+<ul>
+<li><p>The <code>alpha</code> parameter.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>alpha <span class="ot">=</span> verma<span class="sc">$</span>alpha</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>alpha</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="zbm" class="section level3">
+<h3>ZBM</h3>
+<p>The computation of the fuzzy index using the <span class="citation">Zedini and Belhadj (2015)</span> membership function
+needs <code>fm = &quot;ZBM&quot;</code>. Note that in this cases you need to
+specify an additional argument <code>hh.size</code> which is the size of
+the household and an argument <code>k</code> denoting the number of
+poverty states that you want to investigate (see <span class="citation">Zedini and Belhadj (2015)</span> for further details) .
+Leaving the <code>hh.size</code> argument empty is equivalent to say the
+household size for each unit is equal to 1. The default for
+<code>k</code> is <code>k=3</code> which corresponds to belonging to the
+states Weak deprivation, Medium Deprivation and Strong deprivation.</p>
+<p>The output is list containing the</p>
+<ul>
+<li><code>estimates</code> for each poverty set discovered using the
+function <code>e.divide</code> of the <code>ecp</code> package.</li>
+<li>the fuzzy memberships for each poverty set</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># hh.size = sample(1:4, 1000, replace = T, prob = c(4,3,2,1))</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>zbm <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;ZBM&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="at">hh.size =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>zbm.break <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;ZBM&quot;</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>    <span class="at">hh.size =</span> <span class="cn">NULL</span>, <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:center;">
+1
+</th>
+<th style="text-align:center;">
+2
+</th>
+<th style="text-align:center;">
+3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:center;">
+0.190
+</td>
+<td style="text-align:center;">
+0.428
+</td>
+<td style="text-align:center;">
+0.382
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:center;">
+0.213
+</td>
+<td style="text-align:center;">
+0.293
+</td>
+<td style="text-align:center;">
+0.494
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:center;">
+0.351
+</td>
+<td style="text-align:center;">
+0.134
+</td>
+<td style="text-align:center;">
+0.515
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:center;">
+0.411
+</td>
+<td style="text-align:center;">
+0.197
+</td>
+<td style="text-align:center;">
+0.392
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:center;">
+0.670
+</td>
+<td style="text-align:center;">
+0.062
+</td>
+<td style="text-align:center;">
+0.268
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:center;">
+0.513
+</td>
+<td style="text-align:center;">
+0.192
+</td>
+<td style="text-align:center;">
+0.296
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:center;">
+0.218
+</td>
+<td style="text-align:center;">
+0.171
+</td>
+<td style="text-align:center;">
+0.611
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:center;">
+0.378
+</td>
+<td style="text-align:center;">
+0.194
+</td>
+<td style="text-align:center;">
+0.428
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:center;">
+0.341
+</td>
+<td style="text-align:center;">
+0.256
+</td>
+<td style="text-align:center;">
+0.391
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:center;">
+0.394
+</td>
+<td style="text-align:center;">
+0.033
+</td>
+<td style="text-align:center;">
+0.554
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:center;">
+0.310
+</td>
+<td style="text-align:center;">
+0.304
+</td>
+<td style="text-align:center;">
+0.386
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:center;">
+0.440
+</td>
+<td style="text-align:center;">
+0.392
+</td>
+<td style="text-align:center;">
+0.168
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:center;">
+0.209
+</td>
+<td style="text-align:center;">
+0.246
+</td>
+<td style="text-align:center;">
+0.545
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:center;">
+0.443
+</td>
+<td style="text-align:center;">
+0.405
+</td>
+<td style="text-align:center;">
+0.153
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:center;">
+0.177
+</td>
+<td style="text-align:center;">
+0.179
+</td>
+<td style="text-align:center;">
+0.644
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:center;">
+0.234
+</td>
+<td style="text-align:center;">
+0.251
+</td>
+<td style="text-align:center;">
+0.516
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:center;">
+0.256
+</td>
+<td style="text-align:center;">
+0.313
+</td>
+<td style="text-align:center;">
+0.431
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:center;">
+0.470
+</td>
+<td style="text-align:center;">
+0.150
+</td>
+<td style="text-align:center;">
+0.380
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:center;">
+0.100
+</td>
+<td style="text-align:center;">
+0.241
+</td>
+<td style="text-align:center;">
+0.660
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:center;">
+0.732
+</td>
+<td style="text-align:center;">
+0.185
+</td>
+<td style="text-align:center;">
+0.083
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:center;">
+0.489
+</td>
+<td style="text-align:center;">
+0.234
+</td>
+<td style="text-align:center;">
+0.277
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:center;">
+0.445
+</td>
+<td style="text-align:center;">
+0.263
+</td>
+<td style="text-align:center;">
+0.293
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:center;">
+0.318
+</td>
+<td style="text-align:center;">
+0.291
+</td>
+<td style="text-align:center;">
+0.391
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:center;">
+0.481
+</td>
+<td style="text-align:center;">
+0.130
+</td>
+<td style="text-align:center;">
+0.389
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:center;">
+0.177
+</td>
+<td style="text-align:center;">
+0.520
+</td>
+<td style="text-align:center;">
+0.303
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:center;">
+0.349
+</td>
+<td style="text-align:center;">
+0.337
+</td>
+<td style="text-align:center;">
+0.314
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="belhadj" class="section level3">
+<h3>Belhadj</h3>
+<p>The construction of a fuzzy index using the membership function as
+<span class="citation">Besma (2015)</span> is obtained by specifying
+<code>fm=&quot;belhadj&quot;</code>. The arguments <code>z1</code>,
+<code>z2</code> and <code>b</code> need user’s specification (see
+Formula above and <span class="citation">Besma (2015)</span>).</p>
+<p>The value <code>z</code> that correspond to the flex points of the mf
+or to the point where the two mf touch together is calculated by the
+function and returned as <code>z_star</code>.</p>
+<p>The parameter <code>b</code> (&gt;=1) rules the shape of the
+membership functions (set <code>b=1</code> for linearity)</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>z1 <span class="ot">=</span> <span class="dv">500</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>z2 <span class="ot">=</span> <span class="dv">1700</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>b <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>belhadj <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;belhadj&quot;</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="at">z1 =</span> z1, <span class="at">z2 =</span> z2, <span class="at">b =</span> b)  <span class="co"># use id to return ordered as verma?</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>belhadj.break <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;belhadj&quot;</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>    <span class="at">z1 =</span> z1, <span class="at">z2 =</span> z2, <span class="at">b =</span> b, <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040)  <span class="co"># use id to return ordered as verma?</span></span></code></pre></div>
+</div>
+<div id="chakravarty" class="section level3">
+<h3>Chakravarty</h3>
+<p><span class="citation">Chakravarty (2019)</span> axiomatic fuzzy
+index is obtained setting <code>fm = &quot;chakravarty&quot;</code>. The argument
+<code>z</code> needs user’s specification</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>z <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>chakravarty <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;chakravarty&quot;</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>    <span class="at">z =</span> z)</span></code></pre></div>
+<p>again is is possible to specify the <code>breakdown</code> argument
+to obtain estimates at sub-domains.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>chakravarty.break <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;chakravarty&quot;</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>    <span class="at">z =</span> z, <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(verma.break<span class="sc">$</span>estimate, belhadj.break<span class="sc">$</span>estimate, chakravarty.break<span class="sc">$</span>estimate),</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Verma&quot;</span>, <span class="st">&quot;Belhadj&quot;</span>, <span class="st">&quot;Chakravarty&quot;</span>), <span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Verma
+</th>
+<th style="text-align:right;">
+Belhadj
+</th>
+<th style="text-align:right;">
+Chakravarty
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0803
+</td>
+<td style="text-align:right;">
+0.0373
+</td>
+<td style="text-align:right;">
+0.0472
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.1106
+</td>
+<td style="text-align:right;">
+0.0564
+</td>
+<td style="text-align:right;">
+0.0600
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.2247
+</td>
+<td style="text-align:right;">
+0.1494
+</td>
+<td style="text-align:right;">
+0.1118
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.1845
+</td>
+<td style="text-align:right;">
+0.1084
+</td>
+<td style="text-align:right;">
+0.1035
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.1885
+</td>
+<td style="text-align:right;">
+0.0908
+</td>
+<td style="text-align:right;">
+0.1238
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.1413
+</td>
+<td style="text-align:right;">
+0.0697
+</td>
+<td style="text-align:right;">
+0.0911
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0792
+</td>
+<td style="text-align:right;">
+0.0307
+</td>
+<td style="text-align:right;">
+0.0456
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.1459
+</td>
+<td style="text-align:right;">
+0.0721
+</td>
+<td style="text-align:right;">
+0.0817
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.1526
+</td>
+<td style="text-align:right;">
+0.0858
+</td>
+<td style="text-align:right;">
+0.0955
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.1341
+</td>
+<td style="text-align:right;">
+0.0832
+</td>
+<td style="text-align:right;">
+0.0897
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0829
+</td>
+<td style="text-align:right;">
+0.0303
+</td>
+<td style="text-align:right;">
+0.0567
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.1253
+</td>
+<td style="text-align:right;">
+0.0532
+</td>
+<td style="text-align:right;">
+0.0923
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0679
+</td>
+<td style="text-align:right;">
+0.0424
+</td>
+<td style="text-align:right;">
+0.0456
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.1500
+</td>
+<td style="text-align:right;">
+0.0754
+</td>
+<td style="text-align:right;">
+0.0925
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0527
+</td>
+<td style="text-align:right;">
+0.0206
+</td>
+<td style="text-align:right;">
+0.0383
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0679
+</td>
+<td style="text-align:right;">
+0.0257
+</td>
+<td style="text-align:right;">
+0.0484
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0688
+</td>
+<td style="text-align:right;">
+0.0310
+</td>
+<td style="text-align:right;">
+0.0507
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.2084
+</td>
+<td style="text-align:right;">
+0.0876
+</td>
+<td style="text-align:right;">
+0.1119
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.0218
+</td>
+<td style="text-align:right;">
+0.0061
+</td>
+<td style="text-align:right;">
+0.0162
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.2045
+</td>
+<td style="text-align:right;">
+0.1192
+</td>
+<td style="text-align:right;">
+0.1359
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.1065
+</td>
+<td style="text-align:right;">
+0.0368
+</td>
+<td style="text-align:right;">
+0.0795
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.1047
+</td>
+<td style="text-align:right;">
+0.0348
+</td>
+<td style="text-align:right;">
+0.0780
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.1185
+</td>
+<td style="text-align:right;">
+0.0537
+</td>
+<td style="text-align:right;">
+0.0731
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.1455
+</td>
+<td style="text-align:right;">
+0.0575
+</td>
+<td style="text-align:right;">
+0.0917
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0979
+</td>
+<td style="text-align:right;">
+0.0492
+</td>
+<td style="text-align:right;">
+0.0535
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0697
+</td>
+<td style="text-align:right;">
+0.0241
+</td>
+<td style="text-align:right;">
+0.0635
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="verma2" class="section level3">
+<h3>Verma2</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>verma2 <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.12</span>, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">20</span>), <span class="at">alpha =</span> <span class="cn">NULL</span>, <span class="at">fm =</span> <span class="st">&quot;verma2&quot;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; Solving non linear equation: E[u] = HCR</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  1  Expected Value:  0.554 </span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  20  Expected Value:  0.072 </span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  18.099  Expected Value:  0.078 </span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  9.55  Expected Value:  0.131 </span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  11.289  Expected Value:  0.114 </span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10.695  Expected Value:  0.119 </span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10.638  Expected Value:  0.12 </span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10.638  Expected Value:  0.12 </span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10.638  Expected Value:  0.12 </span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10.638  Expected Value:  0.12 </span></span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="co">#&gt; Done.</span></span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="fuzzy-supplementary" class="section level2">
+<h2>Fuzzy supplementary</h2>
+<p>The steps below show how to obtain a Fuzzy Supplementary (FS) poverty
+measure.</p>
+<ul>
+<li><p>Step 1 - Identification</p></li>
+<li><p>Step 2 - Transformation</p></li>
+<li><p>Step 3 - Factor analysis to identify dimensions of
+poverty</p></li>
+<li><p>Step 4 - Calculation of weights</p></li>
+<li><p>Step 5 - Calculation of scores in dimensions</p></li>
+<li><p>Step 6 - Calculation of the <span class="math inline">\(\alpha\)</span> parameter</p></li>
+<li><p>Step 7 - Construction of the FS measure for each
+dimension</p></li>
+</ul>
+<div id="step-1---identification" class="section level3">
+<h3>Step 1 - Identification</h3>
+<p>This step is pretty simple. The user has to select the columns of the
+data that correspond to the items that he/she has decided to keep in the
+analysis.</p>
+<p>Step 1 is done with the following selection</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># eusilc = na.omit(eusilc)</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>step1 <span class="ot">=</span> eusilc[, <span class="dv">4</span><span class="sc">:</span><span class="dv">23</span>]</span></code></pre></div>
+</div>
+<div id="step-2---transformation" class="section level3">
+<h3>Step 2 - Transformation</h3>
+<p>In this step the items are mapped from their original space to the
+<span class="math inline">\([0,1]\)</span> interval using the function
+<code>fs_transform</code> (see <span class="citation">(Betti, Gagliardi,
+and Verma 2018; Betti and Verma 2008)</span>)</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>step2 <span class="ot">=</span> <span class="fu">fs_transform</span>(step1, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> eusilc<span class="sc">$</span>ID)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co"># step2.1 = fs_transform(step1, weight = eusilc$DB090, ID = eusilc$ID,</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co"># depr.score = &#39;d&#39;)</span></span></code></pre></div>
+<p>which outputs</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(step2), <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">align =</span> <span class="st">&quot;c&quot;</span>, <span class="at">caption =</span> <span class="st">&quot;Transformed items&quot;</span>)</span></code></pre></div>
+<table>
+<caption>
+Transformed items
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+ID
+</th>
+<th style="text-align:center;">
+HS040
+</th>
+<th style="text-align:center;">
+HS050
+</th>
+<th style="text-align:center;">
+HS060
+</th>
+<th style="text-align:center;">
+HS070
+</th>
+<th style="text-align:center;">
+HS080
+</th>
+<th style="text-align:center;">
+HS090
+</th>
+<th style="text-align:center;">
+HS100
+</th>
+<th style="text-align:center;">
+HS110
+</th>
+<th style="text-align:center;">
+HS120
+</th>
+<th style="text-align:center;">
+HS160
+</th>
+<th style="text-align:center;">
+HS170
+</th>
+<th style="text-align:center;">
+HS180
+</th>
+<th style="text-align:center;">
+HS190
+</th>
+<th style="text-align:center;">
+HH010
+</th>
+<th style="text-align:center;">
+HH020
+</th>
+<th style="text-align:center;">
+HH040
+</th>
+<th style="text-align:center;">
+HH050
+</th>
+<th style="text-align:center;">
+HH081
+</th>
+<th style="text-align:center;">
+HH091
+</th>
+<th style="text-align:center;">
+HX040
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.623
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.796
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.793
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.098
+</td>
+<td style="text-align:center;">
+0.064
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.148
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.793
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.098
+</td>
+<td style="text-align:center;">
+0.064
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.148
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.120
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.008
+</td>
+<td style="text-align:center;">
+0.609
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.393
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.008
+</td>
+<td style="text-align:center;">
+0.609
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1.000
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.393
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.098
+</td>
+<td style="text-align:center;">
+0.064
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.040
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="step-3---factor-analysis" class="section level3">
+<h3>Step 3 - Factor Analysis</h3>
+<p>This fuzzy supplementary measure use factor analysis to undercover
+latent dimension in the data. There are multiple approaches to get
+factor analysis in R which we do not cover in this vignette, however the
+user can check for example the <code>lavaan</code> package. Anyways,
+factor analysis is not mandatory and the user may wish to unfertake a
+different approach to undercover a latent structure in the data. Indeed,
+it is possible to skip factor analysis or to use a personal assignment
+of columns in dimensions.</p>
+<p>Regardless of the chosen method, to go trough Step 3 the user has to
+specify a numeric vector of the same length of the number of items
+selected in Step 1 that assigns each column to a given dimension.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>dimensions <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>)</span></code></pre></div>
+</div>
+<div id="steps-4-and-5---calculation-of-weights-and-measures-within-dimensions" class="section level3">
+<h3>Steps 4 and 5 - Calculation of weights and measures within
+dimensions</h3>
+<p>These steps computes the weights needed to aggregate transformed
+items values (see Step 2) into one value per dimension per unit.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>steps4_5 <span class="ot">=</span> <span class="fu">fs_weight</span>(dimensions, <span class="at">step2 =</span> step2, <span class="at">rho =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>The output is a longitudinal data frame that contains the weights
+<span class="math inline">\(w_a, w_b, w = w_a\times w_b\)</span> , the
+deprivation score <span class="math inline">\(s_{hi}\)</span> for unit
+<span class="math inline">\(i\)</span> and dimension <span class="math inline">\(j\)</span>, and the overall score <span class="math inline">\(s_i\)</span> (the average over dimensions).</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(steps4_5), <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">caption =</span> <span class="st">&quot;Results from Steps 4 and 5.&quot;</span>)</span></code></pre></div>
+<table>
+<caption>
+Results from Steps 4 and 5.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+ID
+</th>
+<th style="text-align:left;">
+Item
+</th>
+<th style="text-align:right;">
+s
+</th>
+<th style="text-align:right;">
+Factor
+</th>
+<th style="text-align:right;">
+w_a
+</th>
+<th style="text-align:right;">
+w_b
+</th>
+<th style="text-align:right;">
+w
+</th>
+<th style="text-align:right;">
+s_hi
+</th>
+<th style="text-align:right;">
+s_i
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+0.1623
+</td>
+<td style="text-align:right;">
+0.4639
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+0.0423
+</td>
+<td style="text-align:right;">
+0.2748
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+0.6034
+</td>
+<td style="text-align:right;">
+0.5352
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+1.0000
+</td>
+<td style="text-align:right;">
+0.4978
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+0.5589
+</td>
+<td style="text-align:right;">
+0.4668
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+HS040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.8392
+</td>
+<td style="text-align:right;">
+0.4958
+</td>
+<td style="text-align:right;">
+0.4161
+</td>
+<td style="text-align:right;">
+0.1623
+</td>
+<td style="text-align:right;">
+0.2655
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="step-6---calculation-of-the-parameter-alpha" class="section level3">
+<h3>Step 6 - Calculation of the parameter <span class="math inline">\(\alpha\)</span></h3>
+<p>This step is equivalent to that discussed in the Fuzzy Monetary
+section when <code>fm=&quot;verma&quot;</code>. It needs either a former estimate
+of the Head Count Ratio or a value such that the expectation of the
+Fuzzy Supplementary measure has to be equal to.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>alpha <span class="ot">=</span> <span class="fu">fs_equate</span>(<span class="at">steps4_5 =</span> steps4_5, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">HCR =</span> <span class="fl">0.16</span>, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>,</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>    <span class="dv">10</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  1  Expected Value:  0.5571 </span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10  Expected Value:  0.0933 </span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  8.7061  Expected Value:  0.1061 </span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  4.8531  Expected Value:  0.1792 </span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.864  Expected Value:  0.1518 </span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.562  Expected Value:  0.1591 </span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.526  Expected Value:  0.16 </span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.5262  Expected Value:  0.16 </span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.5261  Expected Value:  0.16 </span></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.5262  Expected Value:  0.16 </span></span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="co">#&gt; Done.</span></span></code></pre></div>
+<p>(<em>alternatively a user’s defined specification of the
+<code>alpha</code> argument can be used as well.</em>)</p>
+</div>
+<div id="step-7---construction-of-the-fuzzy-supplementary-measure." class="section level3">
+<h3>Step 7 - Construction of the Fuzzy Supplementary measure.</h3>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># FS = fs_construct(steps4_5 = steps4_5, weight = eusilc$DB090, alpha = alpha,</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="co"># breakdown = NULL) # no breakdown</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>FS <span class="ot">=</span> <span class="fu">fs_construct</span>(<span class="at">steps4_5 =</span> steps4_5, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">alpha =</span> alpha, <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040)</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>FS<span class="sc">$</span>estimate</span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="co">#&gt;          FS1        FS2       FS3        FS4        FS5    Overall</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="co">#&gt; a 0.09643835 0.17655598 0.5744862 0.06669986 0.09059876 0.11209600</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a><span class="co">#&gt; b 0.08354068 0.06906171 0.8100697 0.09512624 0.22995347 0.08354305</span></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="co">#&gt; c 0.05537076 0.13115494 0.8617016 0.11168285 0.10295920 0.17221526</span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="co">#&gt; d 0.05392647 0.19949428 0.7254071 0.09647017 0.04977711 0.11208216</span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a><span class="co">#&gt; e 0.03405788 0.11249955 0.8933400 0.11534015 0.17167108 0.20871308</span></span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a><span class="co">#&gt; f 0.10863516 0.13537428 0.7224909 0.27580309 0.04715950 0.16123614</span></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="co">#&gt; g 0.06252708 0.08401935 0.7302869 0.19107915 0.09410964 0.17286068</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="co">#&gt; h 0.04290882 0.08493133 0.8208806 0.09365728 0.09716454 0.09937165</span></span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="co">#&gt; i 0.07382653 0.13475849 0.9140071 0.09987588 0.13798042 0.16703414</span></span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a><span class="co">#&gt; j 0.04957983 0.12267789 0.8199376 0.10580590 0.11414464 0.18150792</span></span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a><span class="co">#&gt; k 0.05787928 0.07959681 0.8224583 0.08799926 0.15264772 0.20196224</span></span>
+<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="co">#&gt; l 0.05956449 0.13239453 0.8747125 0.15044872 0.07044820 0.12651955</span></span>
+<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a><span class="co">#&gt; m 0.09297477 0.09159909 0.8703797 0.09996728 0.12026839 0.09809991</span></span>
+<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a><span class="co">#&gt; n 0.04543029 0.16334187 0.7460766 0.11051323 0.04027500 0.02592239</span></span>
+<span id="cb26-20"><a href="#cb26-20" tabindex="-1"></a><span class="co">#&gt; o 0.03665721 0.20828398 0.8395327 0.02804651 0.07124334 0.16227117</span></span>
+<span id="cb26-21"><a href="#cb26-21" tabindex="-1"></a><span class="co">#&gt; p 0.04545576 0.17214892 0.8343408 0.09027733 0.11690409 0.11885946</span></span>
+<span id="cb26-22"><a href="#cb26-22" tabindex="-1"></a><span class="co">#&gt; q 0.05669294 0.22919582 0.7956601 0.07603630 0.10952079 0.13429197</span></span>
+<span id="cb26-23"><a href="#cb26-23" tabindex="-1"></a><span class="co">#&gt; r 0.18171063 0.10334327 0.8238627 0.36427601 0.26778976 0.37897851</span></span>
+<span id="cb26-24"><a href="#cb26-24" tabindex="-1"></a><span class="co">#&gt; s 0.15348729 0.13091834 0.9188065 0.19449471 0.13337683 0.24964301</span></span>
+<span id="cb26-25"><a href="#cb26-25" tabindex="-1"></a><span class="co">#&gt; t 0.06405112 0.25004282 0.7813959 0.07525714 0.08403278 0.24703257</span></span>
+<span id="cb26-26"><a href="#cb26-26" tabindex="-1"></a><span class="co">#&gt; u 0.06687543 0.15033606 0.7761352 0.11959351 0.12138248 0.16150856</span></span>
+<span id="cb26-27"><a href="#cb26-27" tabindex="-1"></a><span class="co">#&gt; v 0.06495531 0.14111439 0.8447705 0.09829496 0.10785137 0.16075482</span></span>
+<span id="cb26-28"><a href="#cb26-28" tabindex="-1"></a><span class="co">#&gt; w 0.09392753 0.15524934 0.6643956 0.22837724 0.07825563 0.13226841</span></span>
+<span id="cb26-29"><a href="#cb26-29" tabindex="-1"></a><span class="co">#&gt; x 0.09122664 0.12665374 0.8942401 0.09022338 0.07862394 0.21347578</span></span>
+<span id="cb26-30"><a href="#cb26-30" tabindex="-1"></a><span class="co">#&gt; y 0.04077002 0.24053366 0.7959388 0.16771314 0.13371977 0.13985658</span></span>
+<span id="cb26-31"><a href="#cb26-31" tabindex="-1"></a><span class="co">#&gt; z 0.09004478 0.20134356 0.7992619 0.10510170 0.08196458 0.19722283</span></span></code></pre></div>
+<p>The output of the <code>fs_construct</code> function is a list
+containing:</p>
+<ul>
+<li><code>membership</code> a <code>list</code> containing the FS
+measures for each statistical unit in the sample. Results for each
+dimension can be obtained by</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>FS<span class="sc">$</span>membership<span class="sc">$</span>FS1</span></code></pre></div>
+<ul>
+<li><code>estimate</code> the average of the membership function for
+each dimension</li>
+</ul>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>FS<span class="sc">$</span>estimate</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#&gt;          FS1        FS2       FS3        FS4        FS5    Overall</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co">#&gt; a 0.09643835 0.17655598 0.5744862 0.06669986 0.09059876 0.11209600</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="co">#&gt; b 0.08354068 0.06906171 0.8100697 0.09512624 0.22995347 0.08354305</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="co">#&gt; c 0.05537076 0.13115494 0.8617016 0.11168285 0.10295920 0.17221526</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="co">#&gt; d 0.05392647 0.19949428 0.7254071 0.09647017 0.04977711 0.11208216</span></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co">#&gt; e 0.03405788 0.11249955 0.8933400 0.11534015 0.17167108 0.20871308</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a><span class="co">#&gt; f 0.10863516 0.13537428 0.7224909 0.27580309 0.04715950 0.16123614</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a><span class="co">#&gt; g 0.06252708 0.08401935 0.7302869 0.19107915 0.09410964 0.17286068</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a><span class="co">#&gt; h 0.04290882 0.08493133 0.8208806 0.09365728 0.09716454 0.09937165</span></span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a><span class="co">#&gt; i 0.07382653 0.13475849 0.9140071 0.09987588 0.13798042 0.16703414</span></span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a><span class="co">#&gt; j 0.04957983 0.12267789 0.8199376 0.10580590 0.11414464 0.18150792</span></span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a><span class="co">#&gt; k 0.05787928 0.07959681 0.8224583 0.08799926 0.15264772 0.20196224</span></span>
+<span id="cb28-14"><a href="#cb28-14" tabindex="-1"></a><span class="co">#&gt; l 0.05956449 0.13239453 0.8747125 0.15044872 0.07044820 0.12651955</span></span>
+<span id="cb28-15"><a href="#cb28-15" tabindex="-1"></a><span class="co">#&gt; m 0.09297477 0.09159909 0.8703797 0.09996728 0.12026839 0.09809991</span></span>
+<span id="cb28-16"><a href="#cb28-16" tabindex="-1"></a><span class="co">#&gt; n 0.04543029 0.16334187 0.7460766 0.11051323 0.04027500 0.02592239</span></span>
+<span id="cb28-17"><a href="#cb28-17" tabindex="-1"></a><span class="co">#&gt; o 0.03665721 0.20828398 0.8395327 0.02804651 0.07124334 0.16227117</span></span>
+<span id="cb28-18"><a href="#cb28-18" tabindex="-1"></a><span class="co">#&gt; p 0.04545576 0.17214892 0.8343408 0.09027733 0.11690409 0.11885946</span></span>
+<span id="cb28-19"><a href="#cb28-19" tabindex="-1"></a><span class="co">#&gt; q 0.05669294 0.22919582 0.7956601 0.07603630 0.10952079 0.13429197</span></span>
+<span id="cb28-20"><a href="#cb28-20" tabindex="-1"></a><span class="co">#&gt; r 0.18171063 0.10334327 0.8238627 0.36427601 0.26778976 0.37897851</span></span>
+<span id="cb28-21"><a href="#cb28-21" tabindex="-1"></a><span class="co">#&gt; s 0.15348729 0.13091834 0.9188065 0.19449471 0.13337683 0.24964301</span></span>
+<span id="cb28-22"><a href="#cb28-22" tabindex="-1"></a><span class="co">#&gt; t 0.06405112 0.25004282 0.7813959 0.07525714 0.08403278 0.24703257</span></span>
+<span id="cb28-23"><a href="#cb28-23" tabindex="-1"></a><span class="co">#&gt; u 0.06687543 0.15033606 0.7761352 0.11959351 0.12138248 0.16150856</span></span>
+<span id="cb28-24"><a href="#cb28-24" tabindex="-1"></a><span class="co">#&gt; v 0.06495531 0.14111439 0.8447705 0.09829496 0.10785137 0.16075482</span></span>
+<span id="cb28-25"><a href="#cb28-25" tabindex="-1"></a><span class="co">#&gt; w 0.09392753 0.15524934 0.6643956 0.22837724 0.07825563 0.13226841</span></span>
+<span id="cb28-26"><a href="#cb28-26" tabindex="-1"></a><span class="co">#&gt; x 0.09122664 0.12665374 0.8942401 0.09022338 0.07862394 0.21347578</span></span>
+<span id="cb28-27"><a href="#cb28-27" tabindex="-1"></a><span class="co">#&gt; y 0.04077002 0.24053366 0.7959388 0.16771314 0.13371977 0.13985658</span></span>
+<span id="cb28-28"><a href="#cb28-28" tabindex="-1"></a><span class="co">#&gt; z 0.09004478 0.20134356 0.7992619 0.10510170 0.08196458 0.19722283</span></span></code></pre></div>
+<ul>
+<li><code>alpha</code> the parameter <span class="math inline">\(\alpha\)</span> estimated from data.</li>
+</ul>
+<p>Again it is possible to obtain results for sub-domains by specifying
+the <code>breakdown</code>argument</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+FS1
+</th>
+<th style="text-align:right;">
+FS2
+</th>
+<th style="text-align:right;">
+FS3
+</th>
+<th style="text-align:right;">
+FS4
+</th>
+<th style="text-align:right;">
+FS5
+</th>
+<th style="text-align:right;">
+Overall
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0964
+</td>
+<td style="text-align:right;">
+0.1766
+</td>
+<td style="text-align:right;">
+0.5745
+</td>
+<td style="text-align:right;">
+0.0667
+</td>
+<td style="text-align:right;">
+0.0906
+</td>
+<td style="text-align:right;">
+0.1121
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.0835
+</td>
+<td style="text-align:right;">
+0.0691
+</td>
+<td style="text-align:right;">
+0.8101
+</td>
+<td style="text-align:right;">
+0.0951
+</td>
+<td style="text-align:right;">
+0.2300
+</td>
+<td style="text-align:right;">
+0.0835
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.0554
+</td>
+<td style="text-align:right;">
+0.1312
+</td>
+<td style="text-align:right;">
+0.8617
+</td>
+<td style="text-align:right;">
+0.1117
+</td>
+<td style="text-align:right;">
+0.1030
+</td>
+<td style="text-align:right;">
+0.1722
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.0539
+</td>
+<td style="text-align:right;">
+0.1995
+</td>
+<td style="text-align:right;">
+0.7254
+</td>
+<td style="text-align:right;">
+0.0965
+</td>
+<td style="text-align:right;">
+0.0498
+</td>
+<td style="text-align:right;">
+0.1121
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.0341
+</td>
+<td style="text-align:right;">
+0.1125
+</td>
+<td style="text-align:right;">
+0.8933
+</td>
+<td style="text-align:right;">
+0.1153
+</td>
+<td style="text-align:right;">
+0.1717
+</td>
+<td style="text-align:right;">
+0.2087
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.1086
+</td>
+<td style="text-align:right;">
+0.1354
+</td>
+<td style="text-align:right;">
+0.7225
+</td>
+<td style="text-align:right;">
+0.2758
+</td>
+<td style="text-align:right;">
+0.0472
+</td>
+<td style="text-align:right;">
+0.1612
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0625
+</td>
+<td style="text-align:right;">
+0.0840
+</td>
+<td style="text-align:right;">
+0.7303
+</td>
+<td style="text-align:right;">
+0.1911
+</td>
+<td style="text-align:right;">
+0.0941
+</td>
+<td style="text-align:right;">
+0.1729
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.0429
+</td>
+<td style="text-align:right;">
+0.0849
+</td>
+<td style="text-align:right;">
+0.8209
+</td>
+<td style="text-align:right;">
+0.0937
+</td>
+<td style="text-align:right;">
+0.0972
+</td>
+<td style="text-align:right;">
+0.0994
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.0738
+</td>
+<td style="text-align:right;">
+0.1348
+</td>
+<td style="text-align:right;">
+0.9140
+</td>
+<td style="text-align:right;">
+0.0999
+</td>
+<td style="text-align:right;">
+0.1380
+</td>
+<td style="text-align:right;">
+0.1670
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.0496
+</td>
+<td style="text-align:right;">
+0.1227
+</td>
+<td style="text-align:right;">
+0.8199
+</td>
+<td style="text-align:right;">
+0.1058
+</td>
+<td style="text-align:right;">
+0.1141
+</td>
+<td style="text-align:right;">
+0.1815
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0579
+</td>
+<td style="text-align:right;">
+0.0796
+</td>
+<td style="text-align:right;">
+0.8225
+</td>
+<td style="text-align:right;">
+0.0880
+</td>
+<td style="text-align:right;">
+0.1526
+</td>
+<td style="text-align:right;">
+0.2020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.0596
+</td>
+<td style="text-align:right;">
+0.1324
+</td>
+<td style="text-align:right;">
+0.8747
+</td>
+<td style="text-align:right;">
+0.1504
+</td>
+<td style="text-align:right;">
+0.0704
+</td>
+<td style="text-align:right;">
+0.1265
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0930
+</td>
+<td style="text-align:right;">
+0.0916
+</td>
+<td style="text-align:right;">
+0.8704
+</td>
+<td style="text-align:right;">
+0.1000
+</td>
+<td style="text-align:right;">
+0.1203
+</td>
+<td style="text-align:right;">
+0.0981
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.0454
+</td>
+<td style="text-align:right;">
+0.1633
+</td>
+<td style="text-align:right;">
+0.7461
+</td>
+<td style="text-align:right;">
+0.1105
+</td>
+<td style="text-align:right;">
+0.0403
+</td>
+<td style="text-align:right;">
+0.0259
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0367
+</td>
+<td style="text-align:right;">
+0.2083
+</td>
+<td style="text-align:right;">
+0.8395
+</td>
+<td style="text-align:right;">
+0.0280
+</td>
+<td style="text-align:right;">
+0.0712
+</td>
+<td style="text-align:right;">
+0.1623
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0455
+</td>
+<td style="text-align:right;">
+0.1721
+</td>
+<td style="text-align:right;">
+0.8343
+</td>
+<td style="text-align:right;">
+0.0903
+</td>
+<td style="text-align:right;">
+0.1169
+</td>
+<td style="text-align:right;">
+0.1189
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0567
+</td>
+<td style="text-align:right;">
+0.2292
+</td>
+<td style="text-align:right;">
+0.7957
+</td>
+<td style="text-align:right;">
+0.0760
+</td>
+<td style="text-align:right;">
+0.1095
+</td>
+<td style="text-align:right;">
+0.1343
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.1817
+</td>
+<td style="text-align:right;">
+0.1033
+</td>
+<td style="text-align:right;">
+0.8239
+</td>
+<td style="text-align:right;">
+0.3643
+</td>
+<td style="text-align:right;">
+0.2678
+</td>
+<td style="text-align:right;">
+0.3790
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.1535
+</td>
+<td style="text-align:right;">
+0.1309
+</td>
+<td style="text-align:right;">
+0.9188
+</td>
+<td style="text-align:right;">
+0.1945
+</td>
+<td style="text-align:right;">
+0.1334
+</td>
+<td style="text-align:right;">
+0.2496
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.0641
+</td>
+<td style="text-align:right;">
+0.2500
+</td>
+<td style="text-align:right;">
+0.7814
+</td>
+<td style="text-align:right;">
+0.0753
+</td>
+<td style="text-align:right;">
+0.0840
+</td>
+<td style="text-align:right;">
+0.2470
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.0669
+</td>
+<td style="text-align:right;">
+0.1503
+</td>
+<td style="text-align:right;">
+0.7761
+</td>
+<td style="text-align:right;">
+0.1196
+</td>
+<td style="text-align:right;">
+0.1214
+</td>
+<td style="text-align:right;">
+0.1615
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.0650
+</td>
+<td style="text-align:right;">
+0.1411
+</td>
+<td style="text-align:right;">
+0.8448
+</td>
+<td style="text-align:right;">
+0.0983
+</td>
+<td style="text-align:right;">
+0.1079
+</td>
+<td style="text-align:right;">
+0.1608
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.0939
+</td>
+<td style="text-align:right;">
+0.1552
+</td>
+<td style="text-align:right;">
+0.6644
+</td>
+<td style="text-align:right;">
+0.2284
+</td>
+<td style="text-align:right;">
+0.0783
+</td>
+<td style="text-align:right;">
+0.1323
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.0912
+</td>
+<td style="text-align:right;">
+0.1267
+</td>
+<td style="text-align:right;">
+0.8942
+</td>
+<td style="text-align:right;">
+0.0902
+</td>
+<td style="text-align:right;">
+0.0786
+</td>
+<td style="text-align:right;">
+0.2135
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0408
+</td>
+<td style="text-align:right;">
+0.2405
+</td>
+<td style="text-align:right;">
+0.7959
+</td>
+<td style="text-align:right;">
+0.1677
+</td>
+<td style="text-align:right;">
+0.1337
+</td>
+<td style="text-align:right;">
+0.1399
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0900
+</td>
+<td style="text-align:right;">
+0.2013
+</td>
+<td style="text-align:right;">
+0.7993
+</td>
+<td style="text-align:right;">
+0.1051
+</td>
+<td style="text-align:right;">
+0.0820
+</td>
+<td style="text-align:right;">
+0.1972
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+<div id="variance-estimation" class="section level2">
+<h2>Variance Estimation</h2>
+<p>The variance of each Fuzzy Monetary measure can be estimated either
+via Boostrap or Jackknife Repeated Replications. We recommend the former
+each time the user has no knowledge of the sampling design, while we
+recommend the Jackknife when there is full information on the design and
+of the PSUs (see <span class="citation">Betti, Gagliardi, and Verma
+(2018)</span>).</p>
+<div id="verma-1" class="section level3">
+<h3>Verma</h3>
+<p>In case of <code>fm=&quot;verma&quot;</code>, we recommend the user to use the
+value of <code>alpha</code> from obtained from the function
+<code>fm_construct</code>. It is possible to specify different values of
+the parameter (i.e. <code>alpha=2</code>). We do not recommend to leave
+the argument <code>alpha=NULL</code> for the computation of
+variance.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>alpha <span class="ot">=</span> <span class="fu">fm_construct</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>,</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.12</span>, <span class="at">interval =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">alpha =</span> <span class="cn">NULL</span>)<span class="sc">$</span>alpha</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="co">#&gt; Solving non linear equation: E[u] = HCR</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  1  Expected Value:  0.554 </span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  10  Expected Value:  0.094 </span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  9.491  Expected Value:  0.099 </span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  5.246  Expected Value:  0.168 </span></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  8.18  Expected Value:  0.113 </span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.624  Expected Value:  0.12 </span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.658  Expected Value:  0.12 </span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="co">#&gt; trying with alpha:  7.656  Expected Value:  0.12 </span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a><span class="co">#&gt; Done.</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;verma&quot;</span>, <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.14</span>, <span class="at">alpha =</span> alpha, <span class="at">verbose =</span> F)</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; [1] 7.134979e-07</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;verma&quot;</span>, <span class="at">type =</span> <span class="st">&quot;jackknife&quot;</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>    <span class="at">HCR =</span> <span class="fl">0.14</span>, <span class="at">alpha =</span> <span class="dv">9</span>, <span class="at">stratum =</span> eusilc<span class="sc">$</span>stratum, <span class="at">psu =</span> eusilc<span class="sc">$</span>psu, <span class="at">verbose =</span> F)</span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co">#&gt; $estimate</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co">#&gt; [1] 3.093515e-07</span></span></code></pre></div>
+<p>which gives the bootstrap estimate or the jackknife estimate.</p>
+<p>If there are multiple sub-domains or sub-populations that need
+variance estimation, the user can specify this breakdown to the
+<code>breakdown</code> argument of the function <code>fm_var</code>. For
+example:</p>
+<table>
+<caption>
+Variance estimates for sub-domains
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Bootstrap
+</th>
+<th style="text-align:right;">
+Jackknife
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.0021
+</td>
+<td style="text-align:right;">
+0.0027
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.0055
+</td>
+<td style="text-align:right;">
+0.0093
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+<td style="text-align:right;">
+0.0053
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.0025
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.0019
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+<td style="text-align:right;">
+0.0084
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.0026
+</td>
+<td style="text-align:right;">
+0.0035
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.0030
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0005
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.0059
+</td>
+<td style="text-align:right;">
+0.0104
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.0052
+</td>
+<td style="text-align:right;">
+0.0097
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0022
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+<td style="text-align:right;">
+0.0030
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0022
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0005
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="zbm-1" class="section level3">
+<h3>ZBM</h3>
+<p>The variance of the fuzzy index using <code>fm=&quot;ZBM&quot;</code> is
+obtained as</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>z1 <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>z2 <span class="ot">=</span> <span class="dv">2000</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>b <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;belhadj&quot;</span>, <span class="at">breakdown =</span> <span class="cn">NULL</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="at">z1 =</span> z1, <span class="at">z2 =</span> z2, <span class="at">b =</span> b)</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a><span class="co">#&gt; [1] 4.633145e-05</span></span></code></pre></div>
+<p>Results from sub-domains:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>Bootstrap.zbm <span class="ot">=</span> <span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;ZBM&quot;</span>,</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>    <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040, <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="at">hh.size =</span> <span class="cn">NULL</span>, <span class="at">verbose =</span> F, <span class="at">R =</span> <span class="dv">5</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>Jackknife.zbm <span class="ot">=</span> <span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;ZBM&quot;</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>    <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040, <span class="at">type =</span> <span class="st">&quot;jackknife&quot;</span>, <span class="at">hh.size =</span> <span class="cn">NULL</span>, <span class="at">stratum =</span> eusilc<span class="sc">$</span>stratum,</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>    <span class="at">psu =</span> eusilc<span class="sc">$</span>psu)<span class="sc">$</span>estimate</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Bootstrap
+</div>
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Jackknife
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0055
+</td>
+<td style="text-align:right;">
+0.0022
+</td>
+<td style="text-align:right;">
+0.0059
+</td>
+<td style="text-align:right;">
+0.0165
+</td>
+<td style="text-align:right;">
+0.0151
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.0085
+</td>
+<td style="text-align:right;">
+0.0023
+</td>
+<td style="text-align:right;">
+0.0091
+</td>
+<td style="text-align:right;">
+0.0097
+</td>
+<td style="text-align:right;">
+0.0128
+</td>
+<td style="text-align:right;">
+0.0288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0037
+</td>
+<td style="text-align:right;">
+0.0073
+</td>
+<td style="text-align:right;">
+0.0273
+</td>
+<td style="text-align:right;">
+0.0192
+</td>
+<td style="text-align:right;">
+0.0261
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.0166
+</td>
+<td style="text-align:right;">
+0.0306
+</td>
+<td style="text-align:right;">
+0.0087
+</td>
+<td style="text-align:right;">
+0.0228
+</td>
+<td style="text-align:right;">
+0.0072
+</td>
+<td style="text-align:right;">
+0.0151
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.0049
+</td>
+<td style="text-align:right;">
+0.0025
+</td>
+<td style="text-align:right;">
+0.0021
+</td>
+<td style="text-align:right;">
+0.0194
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+<td style="text-align:right;">
+0.0182
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.0130
+</td>
+<td style="text-align:right;">
+0.0044
+</td>
+<td style="text-align:right;">
+0.0056
+</td>
+<td style="text-align:right;">
+0.0745
+</td>
+<td style="text-align:right;">
+0.0709
+</td>
+<td style="text-align:right;">
+0.0145
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0019
+</td>
+<td style="text-align:right;">
+0.0033
+</td>
+<td style="text-align:right;">
+0.0076
+</td>
+<td style="text-align:right;">
+0.0047
+</td>
+<td style="text-align:right;">
+0.0037
+</td>
+<td style="text-align:right;">
+0.0043
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.0080
+</td>
+<td style="text-align:right;">
+0.0089
+</td>
+<td style="text-align:right;">
+0.0028
+</td>
+<td style="text-align:right;">
+0.0095
+</td>
+<td style="text-align:right;">
+0.0051
+</td>
+<td style="text-align:right;">
+0.0078
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.0430
+</td>
+<td style="text-align:right;">
+0.0144
+</td>
+<td style="text-align:right;">
+0.0124
+</td>
+<td style="text-align:right;">
+0.0487
+</td>
+<td style="text-align:right;">
+0.0125
+</td>
+<td style="text-align:right;">
+0.0285
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.0089
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+<td style="text-align:right;">
+0.0114
+</td>
+<td style="text-align:right;">
+0.0198
+</td>
+<td style="text-align:right;">
+0.0005
+</td>
+<td style="text-align:right;">
+0.0222
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0048
+</td>
+<td style="text-align:right;">
+0.0133
+</td>
+<td style="text-align:right;">
+0.0244
+</td>
+<td style="text-align:right;">
+0.0172
+</td>
+<td style="text-align:right;">
+0.0068
+</td>
+<td style="text-align:right;">
+0.0163
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.0391
+</td>
+<td style="text-align:right;">
+0.0209
+</td>
+<td style="text-align:right;">
+0.0140
+</td>
+<td style="text-align:right;">
+0.0241
+</td>
+<td style="text-align:right;">
+0.0321
+</td>
+<td style="text-align:right;">
+0.0150
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0023
+</td>
+<td style="text-align:right;">
+0.0081
+</td>
+<td style="text-align:right;">
+0.0028
+</td>
+<td style="text-align:right;">
+0.0100
+</td>
+<td style="text-align:right;">
+0.0079
+</td>
+<td style="text-align:right;">
+0.0161
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.0126
+</td>
+<td style="text-align:right;">
+0.0118
+</td>
+<td style="text-align:right;">
+0.0219
+</td>
+<td style="text-align:right;">
+0.0253
+</td>
+<td style="text-align:right;">
+0.0356
+</td>
+<td style="text-align:right;">
+0.0056
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+<td style="text-align:right;">
+0.0145
+</td>
+<td style="text-align:right;">
+0.0175
+</td>
+<td style="text-align:right;">
+0.0088
+</td>
+<td style="text-align:right;">
+0.0062
+</td>
+<td style="text-align:right;">
+0.0104
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0039
+</td>
+<td style="text-align:right;">
+0.0051
+</td>
+<td style="text-align:right;">
+0.0049
+</td>
+<td style="text-align:right;">
+0.0084
+</td>
+<td style="text-align:right;">
+0.0096
+</td>
+<td style="text-align:right;">
+0.0147
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+<td style="text-align:right;">
+0.0018
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+<td style="text-align:right;">
+0.0134
+</td>
+<td style="text-align:right;">
+0.0188
+</td>
+<td style="text-align:right;">
+0.0280
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.0184
+</td>
+<td style="text-align:right;">
+0.0076
+</td>
+<td style="text-align:right;">
+0.0082
+</td>
+<td style="text-align:right;">
+0.0348
+</td>
+<td style="text-align:right;">
+0.0101
+</td>
+<td style="text-align:right;">
+0.0288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.0026
+</td>
+<td style="text-align:right;">
+0.0106
+</td>
+<td style="text-align:right;">
+0.0169
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+<td style="text-align:right;">
+0.0223
+</td>
+<td style="text-align:right;">
+0.0196
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.0167
+</td>
+<td style="text-align:right;">
+0.0189
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+<td style="text-align:right;">
+0.0314
+</td>
+<td style="text-align:right;">
+0.0172
+</td>
+<td style="text-align:right;">
+0.0058
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.0034
+</td>
+<td style="text-align:right;">
+0.0147
+</td>
+<td style="text-align:right;">
+0.0089
+</td>
+<td style="text-align:right;">
+0.0222
+</td>
+<td style="text-align:right;">
+0.0098
+</td>
+<td style="text-align:right;">
+0.0087
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.0108
+</td>
+<td style="text-align:right;">
+0.0036
+</td>
+<td style="text-align:right;">
+0.0142
+</td>
+<td style="text-align:right;">
+0.0099
+</td>
+<td style="text-align:right;">
+0.0105
+</td>
+<td style="text-align:right;">
+0.0112
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.0101
+</td>
+<td style="text-align:right;">
+0.0044
+</td>
+<td style="text-align:right;">
+0.0051
+</td>
+<td style="text-align:right;">
+0.0135
+</td>
+<td style="text-align:right;">
+0.0175
+</td>
+<td style="text-align:right;">
+0.0155
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.0021
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+<td style="text-align:right;">
+0.0018
+</td>
+<td style="text-align:right;">
+0.0153
+</td>
+<td style="text-align:right;">
+0.0040
+</td>
+<td style="text-align:right;">
+0.0195
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0027
+</td>
+<td style="text-align:right;">
+0.0141
+</td>
+<td style="text-align:right;">
+0.0090
+</td>
+<td style="text-align:right;">
+0.0083
+</td>
+<td style="text-align:right;">
+0.0159
+</td>
+<td style="text-align:right;">
+0.0085
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0075
+</td>
+<td style="text-align:right;">
+0.0130
+</td>
+<td style="text-align:right;">
+0.0046
+</td>
+<td style="text-align:right;">
+0.0169
+</td>
+<td style="text-align:right;">
+0.0359
+</td>
+<td style="text-align:right;">
+0.0189
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="belhadj-1" class="section level3">
+<h3>Belhadj</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;belhadj&quot;</span>, <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>    <span class="at">z1 =</span> z1, <span class="at">z2 =</span> z2, <span class="at">b =</span> b)</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="co">#&gt; [1] 5.61342e-05</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;belhadj&quot;</span>, <span class="at">type =</span> <span class="st">&quot;jackknife&quot;</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>    <span class="at">z1 =</span> z1, <span class="at">z2 =</span> z2, <span class="at">b =</span> b, <span class="at">stratum =</span> eusilc<span class="sc">$</span>stratum, <span class="at">psu =</span> eusilc<span class="sc">$</span>psu)<span class="sc">$</span>estimate</span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a><span class="co">#&gt; [1] 7.225783e-05</span></span></code></pre></div>
+<p>for different sub-domains instead use the <code>breakdown</code>
+argument</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Bootstrap
+</th>
+<th style="text-align:right;">
+Jackknife
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0006533
+</td>
+<td style="text-align:right;">
+0.0006651
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.0015827
+</td>
+<td style="text-align:right;">
+0.0026484
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.0014515
+</td>
+<td style="text-align:right;">
+0.0025142
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.0007174
+</td>
+<td style="text-align:right;">
+0.0013729
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.0023697
+</td>
+<td style="text-align:right;">
+0.0027418
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.0005246
+</td>
+<td style="text-align:right;">
+0.0006964
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0018167
+</td>
+<td style="text-align:right;">
+0.0011361
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.0011637
+</td>
+<td style="text-align:right;">
+0.0015166
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.0009833
+</td>
+<td style="text-align:right;">
+0.0038409
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.0020788
+</td>
+<td style="text-align:right;">
+0.0017931
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0008825
+</td>
+<td style="text-align:right;">
+0.0015044
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.0003653
+</td>
+<td style="text-align:right;">
+0.0006236
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0009541
+</td>
+<td style="text-align:right;">
+0.0016231
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.0003353
+</td>
+<td style="text-align:right;">
+0.0004070
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0005726
+</td>
+<td style="text-align:right;">
+0.0005944
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0010156
+</td>
+<td style="text-align:right;">
+0.0013365
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0008115
+</td>
+<td style="text-align:right;">
+0.0013965
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.0019074
+</td>
+<td style="text-align:right;">
+0.0034088
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.0013461
+</td>
+<td style="text-align:right;">
+0.0017560
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.0003846
+</td>
+<td style="text-align:right;">
+0.0004591
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.0005301
+</td>
+<td style="text-align:right;">
+0.0008371
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.0003053
+</td>
+<td style="text-align:right;">
+0.0004691
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.0005979
+</td>
+<td style="text-align:right;">
+0.0007319
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.0010036
+</td>
+<td style="text-align:right;">
+0.0013948
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0003534
+</td>
+<td style="text-align:right;">
+0.0003809
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0011556
+</td>
+<td style="text-align:right;">
+0.0015384
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="chackravarty" class="section level3">
+<h3>Chackravarty</h3>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">fm_var</span>(<span class="at">predicate =</span> eusilc<span class="sc">$</span>red_eq, <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">fm =</span> <span class="st">&quot;chakravarty&quot;</span>, <span class="at">breakdown =</span> <span class="cn">NULL</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>, <span class="at">z =</span> <span class="dv">2000</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="co">#&gt; [1] 3.103429e-05</span></span></code></pre></div>
+<pre><code>#&gt;      Bootstrap    Jackknife
+#&gt; a 0.0002804235 0.0004158112
+#&gt; b 0.0008437258 0.0012829614
+#&gt; c 0.0013147889 0.0028871733
+#&gt; d 0.0007864755 0.0017055518
+#&gt; e 0.0016184995 0.0013255185
+#&gt; f 0.0004442883 0.0007778202
+#&gt; g 0.0011057054 0.0003378127
+#&gt; h 0.0009214411 0.0011400932
+#&gt; i 0.0012609055 0.0038467185
+#&gt; j 0.0013740768 0.0013916370
+#&gt; k 0.0005951805 0.0006472978
+#&gt; l 0.0004561908 0.0006374545
+#&gt; m 0.0006316063 0.0011877194
+#&gt; n 0.0004916378 0.0008579783
+#&gt; o 0.0004339075 0.0005529717
+#&gt; p 0.0007839737 0.0008387518
+#&gt; q 0.0005049652 0.0006530714
+#&gt; r 0.0021807540 0.0040113890
+#&gt; s 0.0005023226 0.0006363698
+#&gt; t 0.0007538178 0.0010090368
+#&gt; u 0.0004754852 0.0009707820
+#&gt; v 0.0003937080 0.0004230363
+#&gt; w 0.0006474884 0.0008194949
+#&gt; x 0.0009788062 0.0012431248
+#&gt; y 0.0003511794 0.0004769740
+#&gt; z 0.0006593892 0.0009339358</code></pre>
+</div>
+<div id="fuzzy-supplementary-1" class="section level3">
+<h3>Fuzzy supplementary</h3>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">fs_var</span>(<span class="at">data =</span> eusilc[, <span class="dv">4</span><span class="sc">:</span><span class="dv">23</span>], <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>, <span class="at">dimensions =</span> dimensions,</span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>    <span class="at">breakdown =</span> <span class="cn">NULL</span>, <span class="at">HCR =</span> <span class="fl">0.16</span>, <span class="at">alpha =</span> alpha, <span class="at">rho =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>    <span class="at">M =</span> <span class="cn">NULL</span>, <span class="at">R =</span> <span class="dv">2</span>, <span class="at">verbose =</span> F)<span class="sc">$</span>variance <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>    <span class="fu">t</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">fs_var</span>(<span class="at">data =</span> eusilc[, <span class="dv">4</span><span class="sc">:</span><span class="dv">23</span>], <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>, <span class="at">dimensions =</span> dimensions,</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>    <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040, <span class="at">HCR =</span> <span class="fl">0.16</span>, <span class="at">alpha =</span> alpha, <span class="at">rho =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>    <span class="at">M =</span> <span class="cn">NULL</span>, <span class="at">R =</span> <span class="dv">50</span>, <span class="at">verbose =</span> F)<span class="sc">$</span>variance <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+FS1
+</th>
+<th style="text-align:right;">
+FS2
+</th>
+<th style="text-align:right;">
+FS3
+</th>
+<th style="text-align:right;">
+FS4
+</th>
+<th style="text-align:right;">
+FS5
+</th>
+<th style="text-align:right;">
+Overall
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+a
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0042
+</td>
+<td style="text-align:right;">
+0.0123
+</td>
+<td style="text-align:right;">
+0.0002
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.0024
+</td>
+<td style="text-align:right;">
+0.0003
+</td>
+<td style="text-align:right;">
+0.0060
+</td>
+<td style="text-align:right;">
+0.0022
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+c
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0061
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+d
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0022
+</td>
+<td style="text-align:right;">
+0.0085
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+e
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0049
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f
+</td>
+<td style="text-align:right;">
+0.0025
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+<td style="text-align:right;">
+0.0076
+</td>
+<td style="text-align:right;">
+0.0051
+</td>
+<td style="text-align:right;">
+0.0002
+</td>
+<td style="text-align:right;">
+0.0016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+g
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+<td style="text-align:right;">
+0.0155
+</td>
+<td style="text-align:right;">
+0.0028
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+h
+</td>
+<td style="text-align:right;">
+0.0002
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0059
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+0.0009
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0082
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+<td style="text-align:right;">
+0.0019
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0039
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0032
+</td>
+<td style="text-align:right;">
+0.0015
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+l
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0043
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+<td style="text-align:right;">
+0.0002
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+m
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0052
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+<td style="text-align:right;">
+0.0023
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0023
+</td>
+<td style="text-align:right;">
+0.0095
+</td>
+<td style="text-align:right;">
+0.0021
+</td>
+<td style="text-align:right;">
+0.0003
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+o
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+0.0067
+</td>
+<td style="text-align:right;">
+0.0043
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0003
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+<td style="text-align:right;">
+0.0033
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0013
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+q
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0027
+</td>
+<td style="text-align:right;">
+0.0033
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0023
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+r
+</td>
+<td style="text-align:right;">
+0.0116
+</td>
+<td style="text-align:right;">
+0.0016
+</td>
+<td style="text-align:right;">
+0.0129
+</td>
+<td style="text-align:right;">
+0.0262
+</td>
+<td style="text-align:right;">
+0.0037
+</td>
+<td style="text-align:right;">
+0.0163
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+s
+</td>
+<td style="text-align:right;">
+0.0100
+</td>
+<td style="text-align:right;">
+0.0015
+</td>
+<td style="text-align:right;">
+0.0025
+</td>
+<td style="text-align:right;">
+0.0100
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0042
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+t
+</td>
+<td style="text-align:right;">
+0.0001
+</td>
+<td style="text-align:right;">
+0.0021
+</td>
+<td style="text-align:right;">
+0.0107
+</td>
+<td style="text-align:right;">
+0.0005
+</td>
+<td style="text-align:right;">
+0.0020
+</td>
+<td style="text-align:right;">
+0.0038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+u
+</td>
+<td style="text-align:right;">
+0.0004
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0105
+</td>
+<td style="text-align:right;">
+0.0025
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0029
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+v
+</td>
+<td style="text-align:right;">
+0.0017
+</td>
+<td style="text-align:right;">
+0.0026
+</td>
+<td style="text-align:right;">
+0.0055
+</td>
+<td style="text-align:right;">
+0.0018
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0031
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+w
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+<td style="text-align:right;">
+0.0019
+</td>
+<td style="text-align:right;">
+0.0113
+</td>
+<td style="text-align:right;">
+0.0033
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+x
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0011
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0007
+</td>
+<td style="text-align:right;">
+0.0003
+</td>
+<td style="text-align:right;">
+0.0024
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+y
+</td>
+<td style="text-align:right;">
+0.0003
+</td>
+<td style="text-align:right;">
+0.0028
+</td>
+<td style="text-align:right;">
+0.0126
+</td>
+<td style="text-align:right;">
+0.0080
+</td>
+<td style="text-align:right;">
+0.0063
+</td>
+<td style="text-align:right;">
+0.0016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+z
+</td>
+<td style="text-align:right;">
+0.0012
+</td>
+<td style="text-align:right;">
+0.0046
+</td>
+<td style="text-align:right;">
+0.0126
+</td>
+<td style="text-align:right;">
+0.0010
+</td>
+<td style="text-align:right;">
+0.0006
+</td>
+<td style="text-align:right;">
+0.0016
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following uses the Jackknife</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="fu">fs_var</span>(<span class="at">data =</span> eusilc[, <span class="dv">4</span><span class="sc">:</span><span class="dv">23</span>], <span class="at">weight =</span> eusilc<span class="sc">$</span>DB090, <span class="at">ID =</span> <span class="cn">NULL</span>, <span class="at">dimensions =</span> dimensions,</span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>    <span class="at">breakdown =</span> eusilc<span class="sc">$</span>db040, <span class="at">HCR =</span> <span class="fl">0.16</span>, <span class="at">alpha =</span> alpha, <span class="at">rho =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;jackknife&quot;</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a>    <span class="at">stratum =</span> eusilc<span class="sc">$</span>stratum, <span class="at">psu =</span> eusilc<span class="sc">$</span>psu, <span class="at">verbose =</span> F, <span class="at">f =</span> <span class="fl">0.01</span>)<span class="sc">$</span>variance <span class="sc">%&gt;%</span></span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-belhadj2010poverty" class="csl-entry">
+Belhadj, Besma, and Mohamed Salah Matoussi. 2010. <span>“Poverty in
+Tunisia: A Fuzzy Measurement Approach.”</span> <em>Swiss Journal of
+Economics and Statistics</em> 146 (2): 431–50.
+</div>
+<div id="ref-besma2015employment" class="csl-entry">
+Besma, Belhadj. 2015. <span>“Employment Measure in Developing Countries
+via Minimum Wage and Poverty New Fuzzy Approach.”</span>
+<em>Opsearch</em> 52: 329–39.
+</div>
+<div id="ref-betti2018simplified" class="csl-entry">
+Betti, Gianni, Francesca Gagliardi, and Vijay Verma. 2018.
+<span>“Simplified Jackknife Variance Estimates for Fuzzy Measures of
+Multidimensional Poverty.”</span> <em>International Statistical
+Review</em> 86 (1): 68–86.
+</div>
+<div id="ref-betti2008fuzzy" class="csl-entry">
+Betti, Gianni, and Vijay Verma. 2008. <span>“Fuzzy Measures of the
+Incidence of Relative Poverty and Deprivation: A Multi-Dimensional
+Perspective.”</span> <em>Statistical Methods and Applications</em> 17:
+225–50.
+</div>
+<div id="ref-chakravarty2019axiomatic" class="csl-entry">
+Chakravarty, Satya R. 2019. <span>“An Axiomatic Approach to
+Multidimensional Poverty Measurement via Fuzzy Sets.”</span>
+<em>Poverty, Social Exclusion and Stochastic Dominance</em>, 123–41.
+</div>
+<div id="ref-zedini2015new" class="csl-entry">
+Zedini, Asma, and Besma Belhadj. 2015. <span>“A New Approach to
+Unidimensional Poverty Analysis: Application to the Tunisian
+Case.”</span> <em>Review of Income and Wealth</em> 61 (3): 465–76.
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

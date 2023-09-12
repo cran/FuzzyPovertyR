@@ -1,0 +1,146 @@
+##################
+#--- Variance ---#
+#' Fuzzy supplementary poverty estimation.
+#'
+#' @param data A matrix or data frame (? davvero?) of items.
+#' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
+#' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.
+#' @param dimensions A numeric vector (of length  `ncol(data)`) of assignments of items in data to dimensions.
+#' @param HCR The head count ratio.
+#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coherced to a factor.
+#' @param alpha The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.
+#' @param rho The critical value to be used for calculation of weights in the kendall correlation matrix.
+#' @param type The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`.
+#' @param R The number of bootstrap replicates. Default is 500.
+#' @param M The size of bootstrap samples. Default is `nrow(data)`.
+#' @param stratum The vector identifying the stratum (if 'jacknife' is chosen as variance estimation technique).
+#' @param psu The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).
+#' @param f The finite population correction fraction (if 'jacknife' is chosen as variance estimation technique).
+#' @param verbose Logical. whether to print the proceeding of the variance estimation procedure.
+#'
+#' @return A list containing the estimated variance.
+#' @export
+#'
+#' @examples
+#' dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
+#' fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
+#' dimensions = dimensions, breakdown = NULL, HCR = .16, alpha = 2,
+#' rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = TRUE)
+
+fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
+                   breakdown = NULL, alpha, rho = NULL, type = 'bootstrap',
+                   R = 500, M = NULL, stratum, psu, f = 0.01, verbose = TRUE){
+
+  if(!is.null(breakdown)) breakdown <- as.factor(breakdown)
+  N <- nrow(data)
+  if(!(type%in%c('bootstrap', 'jackknife'))) stop('incorrect variance estimation method.')
+  if(is.null(M)) M <- nrow(data)
+  if(is.null(ID)) ID <- seq_len(N)
+  if(is.null(weight)) weight <- N
+  switch(type,
+         bootstrap = {
+           BootDistr <- lapply(1:R, function(x) {
+             if(verbose == T) cat('Bootstrap Replicate : ', x, 'of', R, '\n')
+             bootidx <- sample(1:N, size = M, replace = T)
+             ID.boot <- ID[bootidx]
+             data.boot <- data[ID.boot,]
+             weight.boot <- weight[ID.boot]
+             step2.boot <- fs_transform(data.boot, weight.boot, ID = NULL)
+             step3.boot <- fs_weight(dimensions, step2.boot, rho)
+             if(!is.null(breakdown)) {
+               breakdown.boot <- breakdown[ID.boot]
+               try(fs_construct(step3.boot, weight.boot, alpha, breakdown.boot)$estimate) # attenzione ai NA, tratto come 0
+             } else {
+               try(fs_construct(step3.boot, weight.boot, alpha))$estimate # attenzione ai NA, tratto come 0
+             }
+           })
+
+           if(!is.null(breakdown)){
+             J <- length(unique(breakdown))
+             P <- 1+max(dimensions)
+             var.array = array(unlist(BootDistr), dim = c(J, P, R),
+                         dimnames = list(levels(breakdown),
+                                         c(paste0("FS", 1:(P-1)), "Overall"),
+                                         NULL))
+             var.hat = list(variance = apply(var.array, 1:2, var, na.rm = TRUE))
+             # var.hat <- list(variance = Reduce(modifiedSum, BootDistr)/R)
+           } else {
+             var.hat <- list(variance = apply(do.call(rbind, BootDistr), 2, var))
+             # par(mfrow = c(floor((1+max(dimensions))/2), 2))
+             # for(i in 1:nrow(BootDistr)) hist(BootDistr, xlab = '', main = paste(rownames(BootDistr)[i], "Bootstrap distribution"), probability = T)
+             # var.hat <- apply(BootDistr, 1, var) # decidere se restituire questo o anche la distributzione come sotto
+             # var.hat <- list(distribution = BootDistr, variance = apply(BootDistr, 1, var)) #
+           }
+           var.hat
+         },
+         jackknife = {
+           P <- max(dimensions)
+           if(!is.null(breakdown)) J <- length(unique(breakdown))
+           tab <- data.frame(table(stratum, psu))
+           a <- rowSums(with(tab, table(stratum, psu)))
+           if(any(a<2)) stop("There should be at least 2 PSUs in each stratum")
+           strata <- unique(stratum)
+           H <- length(strata) # can be also a character string then
+           w_jh <- tapply(weight, list(stratum, psu), sum, na.rm = T) # sum of the weights inside the strata
+           w_h <- rowSums(w_jh) # sum of the weights inside the strata
+           z_h = vector(mode = 'list', length = H)
+           col.labels <- c(paste0('Dimension ', 1:P), 'Overall')
+           var_h <- matrix(0, nrow = H, ncol = P+1); colnames(var_h) <- col.labels
+           if(!is.null(breakdown)) var_h <- array(NA, dim = c(H, J, P+1), dimnames = list(NULL, levels(breakdown), col.labels))
+           for(h in 1:H){ # for stratum
+             if(verbose == T) cat('doing for stratum',h,'of',H,'\n')
+             stratum_h <- strata[h]
+             psu_h <- tab$psu[tab$stratum==stratum_h] # psu-s in statum h
+             a_h <- length(psu_h)
+             z_hi <- matrix(0, nrow = a_h, ncol = P+1)
+             if(!is.null(breakdown)) z_hi <- array(0, dim = c(J, P+1, a_h))
+             g_hi <- rep(0, a_h)
+             for(i in 1:a_h){ # for PSUs in stratum h
+               if(verbose == T) cat('doing for psu', i, 'of',a_h,'\n')
+               psu_jh <- psu_h[i]
+               delete.idx <- !(stratum==stratum_h & psu==psu_jh) # eliminating observations in psu
+               # change the weights
+               case1.idx <- (stratum!=stratum_h)
+               case2.idx <- (stratum==stratum_h & psu!=psu_jh)
+               # case3 set to 0
+               w <- rep(0,N)
+               w[case1.idx] <- weight[case1.idx]
+               g_hi[i] <- w_h[stratum_h]/(w_h[stratum_h] - w_jh[stratum_h, psu_jh])
+               w[case2.idx] <- (weight*g_hi[i])[case2.idx]
+               ID.jack <- ID[delete.idx]
+               data.jack <- data[delete.idx,]
+               weight.jack <- w[delete.idx]
+               step2.jack <- fs_transform(data.jack, weight.jack, ID = NULL)
+               step3.jack <- fs_weight(dimensions, step2.jack, rho)
+               if(!is.null(breakdown)){
+                 breakdown.jack <- breakdown[delete.idx]
+                 step7.jack <- fs_construct(step3.jack, weight.jack, alpha, breakdown.jack)$estimate # attenzione ai NA, tratto come 0
+                 z_hi[,,i] <- step7.jack
+                 g_hi.mat <- array(g_hi, dim = c(a_h, P+1, J))
+               } else {
+                 step7.jack <- fs_construct(step3.jack, weight.jack, alpha)$estimate # attenzione ai NA, tratto come 0
+                 z_hi[i,] <- step7.jack
+               }
+             }
+
+             if(!is.null(breakdown)){
+               # z_hi.bar <- Reduce(modifiedSum, z_hi)/a_h
+               z_hi.bar <- array(apply(z_hi, 1:2, mean, na.rm = T), dim = c(J, P+1, a_h), dimnames = list(levels(breakdown),col.labels, NULL ))
+               squared.dev <- (z_hi - z_hi.bar)^2
+                var_h[h,,] <- Reduce('+', lapply(1:a_h, function(i) g_hi[i]*squared.dev[,,i])) # oppure usare modified sum
+             } else {
+               z_hi.bar <- apply(z_hi, 2, mean)
+               z_hi.bar <- rep(1, a_h)%*%t(z_hi.bar) # matrix of means
+               var_h[h,] <- (1-f)*t(g_hi)%*%((z_hi - z_hi.bar)^2)
+             }
+           }
+
+           if(!is.null(breakdown)){
+             var.hat <- list(variance = apply(var_h, 2:3, sum))
+           } else {
+             var.hat <- list(variance = apply(var_h, 2, sum))
+           }
+         })
+
+  var.hat
+}

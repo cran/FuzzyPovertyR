@@ -21,6 +21,7 @@
 #'
 #'
 fm_verma2 <- function (predicate, weight, ID, HCR, interval, alpha, breakdown, verbose) {
+  if(!is.null(alpha)) if(alpha < 1) stop("The value of alpha has to be >=1")
   N <- length(predicate)
   if (is.null(ID)) ID <- seq_len(N)
   fm_data <- data.frame(ID = ID, predicate = predicate, weight = weight)

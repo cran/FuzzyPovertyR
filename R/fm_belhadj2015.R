@@ -10,6 +10,11 @@
 #'
 #'
 belhadj2015 <- function(x, z1, z2, z, b){
+  if(z1 < min(x) | z1 > max(x)) stop("The value of z1 has to be between the minimum and the maximum of the predicate")
+  if(z2 < min(x) | z2 > max(x)) stop("The value of z2 has to be between the minimum and the maximum of the predicate")
+  if(z2<z1) stop("The value of z2 has to be > z1")
+  if(b<1) stop("The value of b has to be >=1")
+
   y <- x
   y[x<z1] <- 1
   y[x>=z2] <- 0

@@ -19,7 +19,7 @@ fuzzyScaleItem(item, weight, ID, ...)
 The item rescaled according to Betti et. al 2018.
 }
 \description{
-Step 2. It calculates deprivation score for item j and ind. i as $d_{j,i} = (1-F(c_{j,i})) / (1-F(1)) where F(c_{j,i})$ is the value of j-th item cumulation function for the i individual
+Step 2. It calculates deprivation score
 }
 \references{
 #' Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.

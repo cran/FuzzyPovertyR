@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 library(dplyr)
 library(kableExtra)
 
@@ -18,23 +18,20 @@ library(FuzzyPovertyR)
 data(eusilc)
 
 ## -----------------------------------------------------------------------------
-hcr = HCR(predicate = eusilc$red_eq, weight = eusilc$DB090, p = 0.5, q = 0.6)$HCR # add poverty threshold
+hcr = HCR(predicate = eusilc$eq_income, weight = eusilc$DB090, p = 0.5, q = 0.6)$HCR # add poverty threshold
 
 ## -----------------------------------------------------------------------------
-# eq_income
+verma = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL,
+                     HCR = hcr, interval = c(1,10), alpha = NULL, fm = "verma")
 
 ## -----------------------------------------------------------------------------
-verma = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, ID = NULL,
-                     HCR = 0.12, interval = c(1,10), alpha = NULL, fm = "verma")
-
-## -----------------------------------------------------------------------------
-verma = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, ID = NULL, interval = c(1,10), alpha = 2)
+verma = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, interval = c(1,10), alpha = 2)
 
 ## -----------------------------------------------------------------------------
 head(verma$results)
 
 ## -----------------------------------------------------------------------------
-verma.break = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,10), alpha = NULL, breakdown = eusilc$db040)
+verma.break = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,10), alpha = NULL, breakdown = eusilc$db040)
 
 ## -----------------------------------------------------------------------------
 verma.break$estimate
@@ -45,33 +42,35 @@ alpha
 
 ## -----------------------------------------------------------------------------
 # hh.size = sample(1:4, 1000, replace = T, prob = c(4,3,2,1))
-zbm = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "ZBM", hh.size = NULL)
+zbm = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "ZBM", hh.size = NULL)
 
 ## -----------------------------------------------------------------------------
-zbm.break = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "ZBM", hh.size = NULL, breakdown = eusilc$db040)
+zbm.break = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "ZBM", hh.size = NULL, breakdown = eusilc$db040)
 
 ## ----echo=FALSE---------------------------------------------------------------
 knitr::kable(zbm.break$estimate, digits = 3, align = 'c', format = "html")
 
 ## -----------------------------------------------------------------------------
 z1 = 500; z2 = 1700; b = 2
-belhadj = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", z1 = z1, z2 = z2, b = b) # use id to return ordered as verma?
+belhadj = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", z1 = z1, z2 = z2, b = b) # use id to return ordered as verma?
 
 ## -----------------------------------------------------------------------------
-belhadj.break = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", z1 = z1, z2 = z2, b = b, breakdown = eusilc$db040) # use id to return ordered as verma?
+belhadj.break = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", z1 = z1, z2 = z2, b = b, breakdown = eusilc$db040) # use id to return ordered as verma?
 
 ## -----------------------------------------------------------------------------
 z = 1500
-chakravarty = fm_construct(predicate = eusilc$red_eq, eusilc$DB090, fm = "chakravarty", z = z)
+chakravarty = fm_construct(predicate = eusilc$eq_income, eusilc$DB090, fm = "chakravarty", z = z)
 
 ## -----------------------------------------------------------------------------
-chakravarty.break = fm_construct(predicate = eusilc$red_eq, eusilc$DB090, fm = "chakravarty", z = z, breakdown = eusilc$db040)
+chakravarty.break = fm_construct(predicate = eusilc$eq_income, eusilc$DB090, fm = "chakravarty", z = z, breakdown = eusilc$db040)
 
 ## -----------------------------------------------------------------------------
 knitr::kable(data.frame(verma.break$estimate, belhadj.break$estimate, chakravarty.break$estimate), col.names = c("Verma", "Belhadj", "Chakravarty"), digits = 4)
 
 ## -----------------------------------------------------------------------------
-verma2 = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,20), alpha = NULL, fm = "verma2")
+verma1999 = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+                      ID = NULL, HCR = hcr, interval = c(1,20), 
+                      alpha = NULL, fm = "verma1999")
 
 ## -----------------------------------------------------------------------------
 # eusilc = na.omit(eusilc)
@@ -111,53 +110,54 @@ FS$estimate
 knitr::kable(fs_construct(steps4_5 = steps4_5, weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)$estimate, digits = 4 )
 
 ## -----------------------------------------------------------------------------
-alpha = fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,10), alpha = NULL)$alpha
+alpha = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,10), alpha = NULL)$alpha
 
 ## -----------------------------------------------------------------------------
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "verma",  type = "bootstrap", HCR = .14, alpha = alpha, verbose = F)
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "verma", type = "jackknife", HCR = .14, alpha = 9, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma",  type = "bootstrap", HCR = .14, alpha = alpha, verbose = F)
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", type = "jackknife", HCR = .14, alpha = 9, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)
 
 ## ----echo=FALSE---------------------------------------------------------------
 knitr::kable(cbind(
-  Bootstrap = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = .14, alpha = alpha, verbose = F),
-  Jackknife = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = .14, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)$estimate), digits = 4, caption = 'Variance estimates for sub-domains')
+  Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE),
+  Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = hcr, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)), caption = 'Variance estimates for sub-domains')
 
 ## -----------------------------------------------------------------------------
 z1 = 1000; z2 = 2000; b = 2
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", breakdown = NULL, type = "bootstrap", z1 = z1, z2 = z2, b = b)
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", 
+       breakdown = NULL, type = "bootstrap", z1 = z1, z2 = z2, b = b)
 
 ## ----message = FALSE----------------------------------------------------------
-Bootstrap.zbm = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "ZBM", breakdown = eusilc$db040, type = "bootstrap", hh.size = NULL, verbose = F, R = 5)
-Jackknife.zbm = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "ZBM", breakdown = eusilc$db040, type = "jackknife", hh.size = NULL, stratum = eusilc$stratum, psu = eusilc$psu)$estimate
+Bootstrap.zbm = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "ZBM", breakdown = eusilc$db040, type = "bootstrap", hh.size = NULL, verbose = F, R = 5)
+Jackknife.zbm = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "ZBM", breakdown = eusilc$db040, type = "jackknife", hh.size = NULL, stratum = eusilc$stratum, psu = eusilc$psu)
 
 ## ----echo=FALSE---------------------------------------------------------------
 kbl(data.frame(Bootstrap.zbm, Jackknife.zbm), digits = 4, col.names = rep(1:3,2)) %>% kableExtra::add_header_above(c(" ", "Bootstrap" = 3, "Jackknife" = 3))
 
 ## -----------------------------------------------------------------------------
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", type = "bootstrap", z1 = z1, z2 = z2, b = b)
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", type = "jackknife", z1 = z1, z2 = z2, b = b, stratum = eusilc$stratum, psu = eusilc$psu)$estimate
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", type = "bootstrap", z1 = z1, z2 = z2, b = b)
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", type = "jackknife", z1 = z1, z2 = z2, b = b, stratum = eusilc$stratum, psu = eusilc$psu)
 
 ## ----echo=FALSE---------------------------------------------------------------
 knitr::kable(cbind(
-  Bootstrap = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", breakdown = eusilc$db040, type = "bootstrap", z1 = z1, z2 = z2, b = b), 
-  Jackknife = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "belhadj", breakdown = eusilc$db040, type = "jackknife", z1 = z1, z2 = z2, b = b, stratum = eusilc$stratum, psu = eusilc$psu)$estimate))
+  Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", breakdown = eusilc$db040, type = "bootstrap", z1 = z1, z2 = z2, b = b), 
+  Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", breakdown = eusilc$db040, type = "jackknife", z1 = z1, z2 = z2, b = b, stratum = eusilc$stratum, psu = eusilc$psu)))
 
 ## -----------------------------------------------------------------------------
-fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "chakravarty", breakdown = NULL, type = "bootstrap", z = 2000)
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "chakravarty", breakdown = NULL, type = "bootstrap", z = 2000)
 
 ## ----echo=FALSE---------------------------------------------------------------
 cbind(
-  Bootstrap = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "chakravarty", breakdown = eusilc$db040, type = "bootstrap", z = 2000),
-  Jackknife = fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090, fm = "chakravarty", breakdown = eusilc$db040, type = "jackknife", z = 2000, stratum = eusilc$stratum, psu = eusilc$psu)$estimate)
+  Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "chakravarty", breakdown = eusilc$db040, type = "bootstrap", z = 2000),
+  Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "chakravarty", breakdown = eusilc$db040, type = "jackknife", z = 2000, stratum = eusilc$stratum, psu = eusilc$psu))
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = NULL, HCR = .16, alpha = alpha, rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = F)$variance %>% t() %>% knitr::kable(digits = 4)
+#  fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = NULL, HCR = hcr, alpha = alpha, rho = NULL, type = 'bootstrap', M = NULL, R = 20, verbose = F) %>% t() %>% knitr::kable(digits = 4)
 
 ## -----------------------------------------------------------------------------
-fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = eusilc$db040, HCR = .16, alpha = alpha, rho = NULL, type = 'bootstrap', M = NULL, R = 50, verbose = F)$variance %>% knitr::kable(digits = 4)
+fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = eusilc$db040, HCR = .16, alpha = alpha, rho = NULL, type = 'bootstrap', M = NULL, R = 50, verbose = F) %>% knitr::kable(digits = 4)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions,
 #         breakdown = eusilc$db040, HCR = .16, alpha = alpha, rho = NULL, type = 'jackknife',
-#         stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01)$variance %>% knitr::kable(digits = 4)
+#         stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01) %>% knitr::kable(digits = 4)
 

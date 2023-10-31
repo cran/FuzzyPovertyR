@@ -3,10 +3,9 @@
 #' @description Step 2. This function maps a set of answers to binary or categorical items to the (0,1) interval.
 #'
 #' @details
-#' The function calculates deprivation score for item j and ind. i as $d_{j,i} = (1-F(c_{j,i})) / (1-F(1)) where F(c_{j,i})$ is the value of j-th item cumulation function for the i individual.
+#' The function calculates deprivation score.
 #' To obtain consistent measures of supplementary poverty it is important that items are in the right order.
 #' Lower levels of the items have to correspond to more deprivation while higher levels of the items to a less deprivation.
-#' Example:
 #'
 #' @param data A matrix or a data frame of identified items (see Step 1 of Betti et. al, 2018)
 #' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used

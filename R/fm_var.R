@@ -14,15 +14,18 @@
 #' @param psu The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).
 #' @param f The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).
 #' @param verbose Logical. whether to print the proceeding of the variance estimation procedure.
-#' @param HCR If fm="verma". The value of the head count ratio.
-#' @param interval If fm="verma". A numeric vector of length two to look for the value of alpha (if not supplied).
-#' @param alpha If fm="verma". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR
+#' @param HCR If fm="verma" or fm="verma1999" or fm="TFR" . The value of the head count ratio.
+#' @param interval If fm="verma" or fm="verma1999" or fm="TFR". A numeric vector of length two to look for the value of alpha (if not supplied).
+#' @param alpha If fm="verma" or fm="verma1999" or fm="TFR". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR
 #' @param hh.size If fm="ZBM". A numeric vector of household size.
 #' @param k If fm="ZBM". The number of change points locations to estimate.
-#' @param z1 If fm="belhadj".
-#' @param z2 If fm="belhadj".
-#' @param b If fm="belhadj". The shape parameter (if b=1 the mf is linear between z1 and z2)
-#' @param z If fm="chakravarty".
+#' @param z_min A parameter of the membership function if fm="belhadj2011"
+#' @param z_max A parameter of the membership function if fm="belhadj2011"
+#' @param z1 A parameter of the membership function if fm="belhadj2015" or fm="cerioli"
+#' @param z2 A parameter of the membership function if fm="belhadj2015" or fm="cerioli"
+#' @param b A parameter of the membership function if fm="belhadj2015". The shape parameter (if b=1 the mf is linear between z1 and z2)
+#' @param z A parameter of the membership function if fm="chakravarty".
+#' @param data an optional data frame containing the variables to be used.
 #'
 #' @return The estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
 #' @export
@@ -30,7 +33,7 @@
 #' data(eusilc)
 #' HCR <- 0.14
 #' hh.size <- rep(1, 1000)
-#' fm_var(predicate = eusilc$red_eq, weight = eusilc$DB090,
+#' fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
 #' fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = .14, alpha = 9)
 #'
 fm_var <- function(predicate, weight, fm, ID = NULL,
@@ -40,11 +43,20 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
                    verbose = FALSE,
                    HCR, interval = c(1,10), alpha = NULL,
                    hh.size, k=3,
+                   z_min, z_max,
                    z1, z2, b,
-                   z) {
-
+                   z,
+                   data = NULL) {
+  if(!is.null(data)){
+    predicate <- data[[predicate]]
+    weight <- data[[weight]]
+    breakdown <- data[[breakdown]]
+    hh.size <- data[[hh.size]]
+    ID <- data[[ID]]
+  }
+  if(!(type %in% c("bootstrap", "jackknife"))) stop("Select a variance estimation method from the list:  bootstrap, jackknife ")
   N <- length(predicate)
-  if(is.null(weight)) weight <- N
+  if(is.null(weight)) weight <- rep(N, N)
   if(is.null(ID)) ID <- seq_len(N)
   if(is.null(M)) M <- N
   if(!is.null(breakdown)) breakdown <- as.factor(breakdown)
@@ -61,18 +73,11 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
              if(!is.null(breakdown)) breakdown <- breakdown[bootidx]
              if(fm=="ZBM") {
                hh.size.boot <- hh.size[bootidx]
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z1, z2, b, z, breakdown)$estimate)
+               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z_min, z_max, z1, z2, b, z, breakdown)$estimate)
              } else {
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z1, z2, b, z, breakdown)$estimate)
+               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z_min, z_max, z1, z2, b, z, breakdown)$estimate)
              }
-             # if(!is.null(breakdown)) {
-             #   breakdown.boot <- breakdown[bootidx]
-             #   try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size[bootidx], breakdown.boot, z)$estimate)
-             #   # var.hat <- apply(bootstrap.bill, 1, var)
-             # } else {
-             #   try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size[bootidx], breakdown, z)$estimate)
-             #   # var.hat <- var(bootstrap.bill)
-             # }
+
            }, simplify = "array")
            if(!is.null(breakdown)){
                if (fm=="ZBM") {
@@ -83,11 +88,7 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
 
            } else {
              var.hat <- var(BootDistr)
-             # mettere un if per belhadj (ma belhadj è multidimensionale per me forse va meglio sotto FS)
            }
-           # BootDistr <- sapply(mu.boot, mean) # fm_estimate for each replicate (meaningful only for breakdown?)
-           # hist(BootDistr, xlab = '', main = expression(paste("Bootstrap distribution of E(", mu, ')')), probability = T)
-           # var(BootDistr) #
          },
          jackknife = {
            tab <- data.frame(table(stratum, psu))
@@ -128,12 +129,12 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
 
                if(!is.null(breakdown)){
                  if(fm=="ZBM") {
-                   z_hi[,,i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z1, z2, b, z, breakdown[delete.idx])$estimate
+                   z_hi[,,i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z, breakdown[delete.idx])$estimate
                  } else{
-                   z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z1, z2, b, z, breakdown[delete.idx])$estimate
+                   z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z, breakdown[delete.idx])$estimate
                  }
                } else {
-                 z_hi[i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z1, z2, b, z)$estimate
+                 z_hi[i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z)$estimate
                }
              }
 
@@ -157,33 +158,16 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
 
            if(!is.null(breakdown)) {
              if(fm=="ZBM"){
-               var.hat <- list(estimate = apply(var_h, 2:3, sum, na.rm = T))
+               var.hat <- apply(var_h, 2:3, sum, na.rm = T)
              } else {
-             var.hat <- list(estimate = apply(var_h, 2, sum, na.rm = T) )
+             var.hat <- apply(var_h, 2, sum, na.rm = T)
              }
            } else {
-             var.hat <- list(estimate = sum(var_h, na.rm = T))
+             var.hat <- sum(var_h, na.rm = T)
 
            }
          })
   var.hat
 }
 
-# bootstrap.bill <- function(R, M, predicate, weight, ID, breakdown = NULL, verbose = T, ...){
-#   BootDistr <- sapply(1:R, function(x) {
-#     if(verbose == T) cat('Bootstrap Replicate : ', x, 'of', R, '\n')
-#     bootidx <- sample(1:N, size = M, replace = T)
-#     ID.boot <- ID[bootidx]
-#     predicate.boot <- predicate[bootidx]
-#     weight.boot <- weight[bootidx]
-#     if(!is.null(breakdown)) {
-#       breakdown.boot <- breakdown[bootidx]
-#       try(fm_construct(predicate.boot, weight.boot, ID.boot, HCR, interval, alpha, breakdown.boot)$estimate)
-#       # var.hat <- apply(bootstrap.bill, 1, var)
-#     } else {
-#       try(fm_construct(predicate.boot, weight.boot, ID.boot, HCR, interval, alpha, breakdown)$estimate)
-#       # var.hat <- var(bootstrap.bill)
-#     }
-#   })
-#   return(BootDistr)
-# }
+

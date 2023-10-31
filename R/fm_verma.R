@@ -20,6 +20,7 @@
 #' A list containing the (fuzzy) membership function for each individual in the sample, the estimated expected value of the function, the alpha parameter.
 #'
 fm_verma <- function(predicate, weight, ID, HCR, interval, alpha, breakdown, verbose){ # cambiare ordine dei parametri
+  if(!is.null(alpha)) if(alpha < 1) stop("The value of alpha has to be >=1")
   N <- length(predicate)
   if(is.null(ID)) ID <- seq_len(N)
   if(!is.null(breakdown)) {

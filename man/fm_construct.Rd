@@ -6,7 +6,7 @@
 \usage{
 fm_construct(
   predicate,
-  weight,
+  weight = NULL,
   fm = "verma",
   ID = NULL,
   HCR,
@@ -14,12 +14,15 @@ fm_construct(
   alpha = NULL,
   hh.size,
   k = 3,
+  z_min,
+  z_max,
   z1,
   z2,
   b,
   z,
   breakdown = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  data = NULL
 )
 }
 \arguments{
@@ -27,35 +30,42 @@ fm_construct(
 
 \item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
 
-\item{fm}{The memebership function (deafult is "verma". Other options are "ZBM", "belhadj", "chakravarty". See references below.)}
+\item{fm}{The memebership function (deafult is "verma". Other options are "ZBM", "belhadj", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al (2023) The fuzzy approach to poverty measurement. Research handbook of measuring poverty and depreivation (ed. by J. Silber))}
 
 \item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
 
-\item{HCR}{If fm="verma". The value of the head count ratio.}
+\item{HCR}{If fm="verma" or fm="verma1999" or fm="TFR" . The value of the head count ratio.}
 
-\item{interval}{If fm="verma". A numeric vector of length two to look for the value of alpha (if not supplied).}
+\item{interval}{If fm="verma" or fm="verma1999" or fm="TFR". A numeric vector of length two to look for the value of alpha (if not supplied).}
 
-\item{alpha}{If fm="verma". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR}
+\item{alpha}{If fm="verma" or fm="verma1999" or fm="TFR". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR}
 
 \item{hh.size}{If fm="ZBM". A numeric vector of household size.}
 
 \item{k}{If fm="ZBM". The number of change points locations to estimate.}
 
-\item{z1}{If fm="belhadj".}
+\item{z_min}{A parameter of the membership function if fm="belhadj2011"}
 
-\item{z2}{If fm="belhadj".}
+\item{z_max}{A parameter of the membership function if fm="belhadj2011"}
 
-\item{b}{If fm="belhadj". The shape parameter (if b=1 the mf is linear between z1 and z2)}
+\item{z1}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli"}
 
-\item{z}{If fm="chakravarty".}
+\item{z2}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli"}
+
+\item{b}{A parameter of the membership function if fm="belhadj2015". The shape parameter (if b=1 the mf is linear between z1 and z2)}
+
+\item{z}{A parameter of the membership function if fm="chakravarty".}
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha).}
 
 \item{verbose}{Logical. whether to print the proceeding of the procedure.}
+
+\item{data}{an optional data frame containing the variables to be used.}
 }
 \value{
-If fm="verma". It returns a list containing the (fuzzy) membership function for each individual in the sample,
-the estimated expected value of the function, the alpha parameter. if breakdown is supplied it gives an output for each level.
+a list containing the (fuzzy) membership function for each individual in the sample,
+the estimated expected value (\code{estimate}) of the function and the parameters of the
+membership functions (supplied or calculated). if breakdown is supplied it gives an output for each level.
 }
 \description{
 \code{fm_construct} constructs fuzzy monetary poverty estimates.
@@ -68,6 +78,6 @@ the usual dichotomy poor (1) not-poor(0) is replaced with a continuum score in $
 data(eusilc)
 HCR <- .154
 hh.size <- sample(1:4, 1000, replace = TRUE)
-fm_construct(predicate = eusilc$red_eq, weight = eusilc$DB090,
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
 fm = "verma", HCR = HCR, ID = eusilc$ID)
 }

@@ -1,6 +1,6 @@
 #' Fuzzy supplementary poverty estimation
 #'
-#' @description Step 2. It calculates deprivation score for item j and ind. i as $d_{j,i} = (1-F(c_{j,i})) / (1-F(1)) where F(c_{j,i})$ is the value of j-th item cumulation function for the i individual
+#' @description Step 2. It calculates deprivation score
 #' @param item A factor or numeric vector representing answers to an item (a column of data) that has to be rescaled. it will be converted to an ordered factor.
 #' @param weight A vector of sampling weights. If it is NULL (the default) weights are assigned assuming simple random sampling of units.
 #' @param ID A vector of length `nrow(data)` containing individuals IDs. if NULL (the default) row numbers will be used.

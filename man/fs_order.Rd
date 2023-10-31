@@ -15,7 +15,7 @@ fs_order(data, vec_order)
 A dataset with the same item of data  with inverted order for those with vec_order==TRUE
 }
 \description{
-Detect and invert deprivation items for FS
+Detects and inverts deprivation items for FS
 }
 \examples{
 #Create data

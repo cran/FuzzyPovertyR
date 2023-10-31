@@ -36,7 +36,7 @@ fs_weight <- function(dimensions, step2, rho = NULL){
     dplyr::inner_join(data.frame(Item = Items, Factor = dimensions), by = 'Item') %>%
     dplyr::group_by(Factor, Item) %>% # raggruppo per item, dimensione
     dplyr::mutate(w_a = sd(s) / mean(s) ) %>%
-    dplyr::inner_join(wb.jh_df) %>% # aggiungo i pesi dallo step prima
+    dplyr::inner_join(wb.jh_df, by = 'Item') %>% # aggiungo i pesi dallo step prima
     dplyr::mutate(w = w_a*w_b) %>%
     dplyr::group_by(Factor, ID) %>%
     dplyr::mutate(s_hi = weighted.mean(s, w = w)) %>%

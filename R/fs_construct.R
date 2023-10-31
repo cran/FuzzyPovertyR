@@ -26,7 +26,7 @@
 #' weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)
 
 fs_construct <- function(steps4_5, weight, alpha, breakdown = NULL){
-
+  if(!is.null(alpha)) if(alpha < 1) stop("The value of alpha has to be >=1")
   J <- max(steps4_5$Factor)
 
   res.list <-vector(mode = 'list', length = J+1)

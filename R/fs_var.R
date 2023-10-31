@@ -30,13 +30,12 @@
 fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
                    breakdown = NULL, alpha, rho = NULL, type = 'bootstrap',
                    R = 500, M = NULL, stratum, psu, f = 0.01, verbose = TRUE){
-
+  if(!(type %in% c("bootstrap", "jackknife"))) stop("Select a variance estimation method from the list:  bootstrap, jackknife ")
   if(!is.null(breakdown)) breakdown <- as.factor(breakdown)
   N <- nrow(data)
-  if(!(type%in%c('bootstrap', 'jackknife'))) stop('incorrect variance estimation method.')
   if(is.null(M)) M <- nrow(data)
   if(is.null(ID)) ID <- seq_len(N)
-  if(is.null(weight)) weight <- N
+  if(is.null(weight)) weight <- rep(N, N)
   switch(type,
          bootstrap = {
            BootDistr <- lapply(1:R, function(x) {
@@ -62,10 +61,10 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
                          dimnames = list(levels(breakdown),
                                          c(paste0("FS", 1:(P-1)), "Overall"),
                                          NULL))
-             var.hat = list(variance = apply(var.array, 1:2, var, na.rm = TRUE))
+             var.hat = apply(var.array, 1:2, var, na.rm = TRUE)
              # var.hat <- list(variance = Reduce(modifiedSum, BootDistr)/R)
            } else {
-             var.hat <- list(variance = apply(do.call(rbind, BootDistr), 2, var))
+             var.hat <- apply(do.call(rbind, BootDistr), 2, var)
              # par(mfrow = c(floor((1+max(dimensions))/2), 2))
              # for(i in 1:nrow(BootDistr)) hist(BootDistr, xlab = '', main = paste(rownames(BootDistr)[i], "Bootstrap distribution"), probability = T)
              # var.hat <- apply(BootDistr, 1, var) # decidere se restituire questo o anche la distributzione come sotto
@@ -136,9 +135,9 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
            }
 
            if(!is.null(breakdown)){
-             var.hat <- list(variance = apply(var_h, 2:3, sum))
+             var.hat <- apply(var_h, 2:3, sum)
            } else {
-             var.hat <- list(variance = apply(var_h, 2, sum))
+             var.hat <- apply(var_h, 2, sum)
            }
          })
 

@@ -4,7 +4,7 @@
 \alias{fm_Chakravarty}
 \title{Fuzzy monetary poverty estimation}
 \usage{
-fm_Chakravarty(x, z, weight, breakdown)
+fm_Chakravarty(x, z, weight, breakdown, ID)
 }
 \arguments{
 \item{x}{A numeric vector of a poverty predicate}
@@ -14,6 +14,8 @@ fm_Chakravarty(x, z, weight, breakdown)
 \item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha).}
+
+\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
 }
 \value{
 The membership grades

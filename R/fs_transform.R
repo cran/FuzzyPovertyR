@@ -13,7 +13,7 @@
 #' @param depr.score The deprivation score to be used (see d or s in Betti et al (2018))
 #' @param ... other parameters
 #'
-#' @return a matrix of the same dimension of `data` with items mapped into the (0,1) interval
+#' @return An object of class FuzzySupplementary containing a matrix of the same dimension of `data` with items mapped into the (0,1) interval
 #' @export
 #'
 #' @examples
@@ -26,11 +26,13 @@
 #' Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
 #'
 fs_transform = function(data, weight = NULL, ID = NULL, depr.score = "s", ...) {
+
   N <- nrow(data)
   if(is.null(ID)) ID <- seq_len(N)
   if(is.null(weight)) weight <- rep(N,N)
   deprivation_scores <- apply(data, 2, fuzzyScaleItem, weight, ID)
   transformed_items <- data.frame( ID, do.call(cbind, lapply(deprivation_scores, function(x) x[[depr.score]]) ), row.names = ID )
+  transformed_items <- FuzzySupplementary(list(step2 = transformed_items))
   return(transformed_items)
 
 }

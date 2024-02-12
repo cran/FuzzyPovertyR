@@ -19,7 +19,7 @@
 #' steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
 #' alpha <- fs_equate(steps4_5 = steps4_5, weight = eusilc$DB090, HCR = .16, interval = c(1,10))
 fs_equate <- function(steps4_5, weight, HCR, interval = c(1,10), verbose = TRUE){ # weight has to be attached to the data frame. should not be specified each time.
-
+  steps4_5 <- steps4_5$steps4_5
   if(is.null(weight)) weight <- nrow(steps4_5)
   FS.data <- unique(steps4_5[,c('ID','s_i')])
   FS.data$weight <- weight # potrebbe essere meglio averla dallo step prima? altrimenti devo aggiungere di nuovo l'opzione in caso uno il peso non ce l'abbia.

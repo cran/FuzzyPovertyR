@@ -1,6 +1,6 @@
 #' Fuzzy predicate poverty estimation
 #'
-#' @description This function takes as input a numeric vector representing a predicate variable and turns it into its equivalised verision
+#' @description This function takes as input a numeric vector representing a predicate variable and turns it into its equivalised version
 #' using different equivalence scales.
 #'
 #' @param predicate A numeric vector representing the poverty predicate (i.e. income or expenditure)
@@ -11,7 +11,7 @@
 # value of equivalent people. It is to define only if scale.eq ="new"
 #' @import dplyr
 #'
-#' @return A numeric vector containing the equivalised predicate variable.
+#' @return A data.frame containing the equivalised predicate variable.
 #' @export
 #'
 #' @examples

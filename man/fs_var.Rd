@@ -23,7 +23,7 @@ fs_var(
 )
 }
 \arguments{
-\item{data}{A matrix or data frame (? davvero?) of items.}
+\item{data}{A matrix or data frame of items.}
 
 \item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used}
 
@@ -33,7 +33,7 @@ fs_var(
 
 \item{HCR}{The head count ratio.}
 
-\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coherced to a factor.}
+\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.}
 
 \item{alpha}{The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
 
@@ -54,7 +54,7 @@ fs_var(
 \item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure.}
 }
 \value{
-A list containing the estimated variance.
+An object of class FuzzySupplementary containing the estimated variance.
 }
 \description{
 Fuzzy supplementary poverty estimation.

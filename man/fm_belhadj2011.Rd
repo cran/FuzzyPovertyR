@@ -4,7 +4,7 @@
 \alias{fm_belhadj2011}
 \title{Fuzzy monetary poverty estimation}
 \usage{
-fm_belhadj2011(x, z_min, z_max, weight, breakdown)
+fm_belhadj2011(x, z_min, z_max, weight, breakdown, ID)
 }
 \arguments{
 \item{x}{poverty predicate}
@@ -16,6 +16,8 @@ fm_belhadj2011(x, z_min, z_max, weight, breakdown)
 \item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for.}
+
+\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
 }
 \value{
 a list containing the membership function values and its expected value

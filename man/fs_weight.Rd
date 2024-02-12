@@ -14,10 +14,10 @@ fs_weight(dimensions, step2, rho = NULL)
 \item{rho}{The critical value to be used for calculation of weights in the kendall correlation matrix.}
 }
 \value{
-A data frame of weights and deprivation scores in each dimension identified.
+An object of class FuzzySupplementary with calculated weights and deprivation scores in each dimension identified.
 }
 \description{
-Step 4 and Step 5. Calculates the weights of dimensions discovered after factor analysis.
+Step 4 and Step 5. Calculates the weights of dimensions discovered after Dimension analysis.
 }
 \details{
 This function calculates the two set of weights w_a and w_b (see References)

@@ -13,7 +13,6 @@ fm_construct(
   interval = c(1, 10),
   alpha = NULL,
   hh.size,
-  k = 3,
   z_min,
   z_max,
   z1,
@@ -21,8 +20,8 @@ fm_construct(
   b,
   z,
   breakdown = NULL,
-  verbose = TRUE,
-  data = NULL
+  data = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -30,7 +29,7 @@ fm_construct(
 
 \item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
 
-\item{fm}{The memebership function (deafult is "verma". Other options are "ZBM", "belhadj", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al (2023) The fuzzy approach to poverty measurement. Research handbook of measuring poverty and depreivation (ed. by J. Silber))}
+\item{fm}{The membership function (defult is "verma". Other options are "ZBM", "belhadj", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al (2023) The fuzzy approach to poverty measurement. Research handbook of measuring poverty and deprivation (ed. by J. Silber))}
 
 \item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
 
@@ -41,8 +40,6 @@ fm_construct(
 \item{alpha}{If fm="verma" or fm="verma1999" or fm="TFR". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR}
 
 \item{hh.size}{If fm="ZBM". A numeric vector of household size.}
-
-\item{k}{If fm="ZBM". The number of change points locations to estimate.}
 
 \item{z_min}{A parameter of the membership function if fm="belhadj2011"}
 
@@ -58,14 +55,14 @@ fm_construct(
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha).}
 
-\item{verbose}{Logical. whether to print the proceeding of the procedure.}
-
 \item{data}{an optional data frame containing the variables to be used.}
+
+\item{verbose}{Logical. whether to print the proceeding of the procedure.}
 }
 \value{
-a list containing the (fuzzy) membership function for each individual in the sample,
+an object of class FuzzyMonetary containing the (fuzzy) membership function for each individual in the sample,
 the estimated expected value (\code{estimate}) of the function and the parameters of the
-membership functions (supplied or calculated). if breakdown is supplied it gives an output for each level.
+membership functions (supplied or calculated). If breakdown is supplied it gives an output for each level.
 }
 \description{
 \code{fm_construct} constructs fuzzy monetary poverty estimates.

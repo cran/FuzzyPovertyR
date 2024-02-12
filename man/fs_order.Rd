@@ -12,7 +12,7 @@ fs_order(data, vec_order)
 \item{vec_order}{a vector length n with TRUE or FALSE. True if the order of the variable is to be inverted, False otherwise}
 }
 \value{
-A dataset with the same item of data  with inverted order for those with vec_order==TRUE
+A data.frame with the same item of data  with inverted order for those with vec_order==TRUE
 }
 \description{
 Detects and inverts deprivation items for FS

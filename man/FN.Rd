@@ -16,7 +16,7 @@ FN(x, a, b, c)
 \item{c}{Membership function parameter}
 }
 \value{
-The memebrship grade
+The membrship grade
 }
 \description{
 Fuzzy monetary poverty estimation

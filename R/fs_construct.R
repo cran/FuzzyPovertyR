@@ -5,10 +5,10 @@
 #' @param steps4_5 The results from `fs_equate`.
 #' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
 #' @param alpha The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.
-#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coherced to a factor.
+#' @param breakdown A Dimension of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a Dimension.
 #'
 #' @import dplyr
-#' @return A list of results containing the fuzzy meambership function for each unit, the point estimate (i.e. the expected value of the function), and the alpha parameter.
+#' @return An object of class FuzzySupplementary containing the fuzzy membership function for each unit, the point estimate (i.e. the expected value of the function), and the alpha parameter.
 #' @export
 #'
 #' @examples
@@ -26,8 +26,9 @@
 #' weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)
 
 fs_construct <- function(steps4_5, weight, alpha, breakdown = NULL){
+  steps4_5 <- steps4_5$steps4_5
   if(!is.null(alpha)) if(alpha < 1) stop("The value of alpha has to be >=1")
-  J <- max(steps4_5$Factor)
+  J <- max(steps4_5$Dimension)
 
   res.list <-vector(mode = 'list', length = J+1)
   headers <- c(paste0('FS', 1:J), 'Overall')
@@ -48,8 +49,8 @@ fs_construct <- function(steps4_5, weight, alpha, breakdown = NULL){
   res.list[['Overall']] <- FS.data.ord
 
   for(j in 1:J){
-    FS.data <- unique(steps4_5[steps4_5$Factor==j, c('ID','s_hi')])
-    if(!is.null(breakdown)) FS.data <- data.frame(unique(steps4_5[steps4_5$Factor==j, c('ID','s_hi')]), breakdown)
+    FS.data <- unique(steps4_5[steps4_5$Dimension==j, c('ID','s_hi')])
+    if(!is.null(breakdown)) FS.data <- data.frame(unique(steps4_5[steps4_5$Dimension==j, c('ID','s_hi')]), breakdown)
     FS.data$weight <- weight # potrebbe essere meglio averla dallo step prima? altrimenti devo aggiungere di nuovo l'opzione in caso uno il peso non ce l'abbia
 
     s <- FS.data[['s_hi']]
@@ -71,6 +72,7 @@ fs_construct <- function(steps4_5, weight, alpha, breakdown = NULL){
     colnames(estimate) <- headers
   }
 
-
-  return(list( membership = res.list, estimate = estimate, alpha = alpha))
+  res <- list( membership = res.list, estimate = estimate, alpha = alpha)
+  res <- FuzzySupplementary(res)
+  return(res)
 }

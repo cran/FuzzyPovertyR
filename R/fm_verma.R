@@ -61,7 +61,7 @@ fm_verma <- function(predicate, weight, ID, HCR, interval, alpha, breakdown, ver
     # return(list(results = fm_data.list, estimates = fm_estimates, alpha = alpha))
 
   }
-  out <- list(results = fm_data, estimate = estimate, alpha = alpha)
+  out <- list(results = fm_data, estimate = estimate, parameters = list(alpha = alpha), fm = "verma")
   return(out)
 
 }

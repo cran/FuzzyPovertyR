@@ -18,7 +18,7 @@ fs_transform(data, weight = NULL, ID = NULL, depr.score = "s", ...)
 \item{...}{other parameters}
 }
 \value{
-a matrix of the same dimension of \code{data} with items mapped into the (0,1) interval
+An object of class FuzzySupplementary containing a matrix of the same dimension of \code{data} with items mapped into the (0,1) interval
 }
 \description{
 Step 2. This function maps a set of answers to binary or categorical items to the (0,1) interval.

@@ -2,23 +2,23 @@
 #--- Variance ---#
 #' Fuzzy supplementary poverty estimation.
 #'
-#' @param data A matrix or data frame (? davvero?) of items.
+#' @param data A matrix or data frame of items.
 #' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
 #' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.
 #' @param dimensions A numeric vector (of length  `ncol(data)`) of assignments of items in data to dimensions.
 #' @param HCR The head count ratio.
-#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coherced to a factor.
+#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.
 #' @param alpha The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.
 #' @param rho The critical value to be used for calculation of weights in the kendall correlation matrix.
 #' @param type The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`.
 #' @param R The number of bootstrap replicates. Default is 500.
 #' @param M The size of bootstrap samples. Default is `nrow(data)`.
-#' @param stratum The vector identifying the stratum (if 'jacknife' is chosen as variance estimation technique).
-#' @param psu The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).
-#' @param f The finite population correction fraction (if 'jacknife' is chosen as variance estimation technique).
+#' @param stratum The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).
+#' @param psu The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).
+#' @param f The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).
 #' @param verbose Logical. whether to print the proceeding of the variance estimation procedure.
 #'
-#' @return A list containing the estimated variance.
+#' @return An object of class FuzzySupplementary containing the estimated variance.
 #' @export
 #'
 #' @examples
@@ -64,7 +64,7 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
              var.hat = apply(var.array, 1:2, var, na.rm = TRUE)
              # var.hat <- list(variance = Reduce(modifiedSum, BootDistr)/R)
            } else {
-             var.hat <- apply(do.call(rbind, BootDistr), 2, var)
+             var.hat <- apply(do.call(rbind, BootDistr), 2, var, na.rm = TRUE)
              # par(mfrow = c(floor((1+max(dimensions))/2), 2))
              # for(i in 1:nrow(BootDistr)) hist(BootDistr, xlab = '', main = paste(rownames(BootDistr)[i], "Bootstrap distribution"), probability = T)
              # var.hat <- apply(BootDistr, 1, var) # decidere se restituire questo o anche la distributzione come sotto
@@ -83,7 +83,7 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
            w_jh <- tapply(weight, list(stratum, psu), sum, na.rm = T) # sum of the weights inside the strata
            w_h <- rowSums(w_jh) # sum of the weights inside the strata
            z_h = vector(mode = 'list', length = H)
-           col.labels <- c(paste0('Dimension ', 1:P), 'Overall')
+           col.labels <- c(paste0('FS', 1:P), 'Overall')
            var_h <- matrix(0, nrow = H, ncol = P+1); colnames(var_h) <- col.labels
            if(!is.null(breakdown)) var_h <- array(NA, dim = c(H, J, P+1), dimnames = list(NULL, levels(breakdown), col.labels))
            for(h in 1:H){ # for stratum
@@ -141,5 +141,11 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
            }
          })
 
-  var.hat
+  if(!is.null(breakdown)) {
+    var.hat <- list(variance = var.hat, size = table(breakdown), type = type)
+  } else {
+    var.hat <- list(variance = var.hat, type = type)
+  }
+  var.hat <- FuzzySupplementary(var.hat)
+  return(var.hat)
 }

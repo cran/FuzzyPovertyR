@@ -6,28 +6,27 @@
 #' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used.
 #' @param fm the type of membership function to use
 #' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.
-#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). Ff numeric will be coherced to a factor.
 #' @param type The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`.
 #' @param R The number of bootstrap replicates. Default is 500.
 #' @param M The size of bootstrap samples. Default is `nrow(data)`.
 #' @param stratum The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).
-#' @param psu The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).
+#' @param psu The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).
 #' @param f The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).
 #' @param verbose Logical. whether to print the proceeding of the variance estimation procedure.
 #' @param HCR If fm="verma" or fm="verma1999" or fm="TFR" . The value of the head count ratio.
 #' @param interval If fm="verma" or fm="verma1999" or fm="TFR". A numeric vector of length two to look for the value of alpha (if not supplied).
 #' @param alpha If fm="verma" or fm="verma1999" or fm="TFR". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR
 #' @param hh.size If fm="ZBM". A numeric vector of household size.
-#' @param k If fm="ZBM". The number of change points locations to estimate.
 #' @param z_min A parameter of the membership function if fm="belhadj2011"
 #' @param z_max A parameter of the membership function if fm="belhadj2011"
 #' @param z1 A parameter of the membership function if fm="belhadj2015" or fm="cerioli"
 #' @param z2 A parameter of the membership function if fm="belhadj2015" or fm="cerioli"
 #' @param b A parameter of the membership function if fm="belhadj2015". The shape parameter (if b=1 the mf is linear between z1 and z2)
 #' @param z A parameter of the membership function if fm="chakravarty".
+#' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.
 #' @param data an optional data frame containing the variables to be used.
 #'
-#' @return The estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
+#' @return An object of class FuzzyMonetary containing the estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
 #' @export
 #' @examples
 #' data(eusilc)
@@ -36,16 +35,18 @@
 #' fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
 #' fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = .14, alpha = 9)
 #'
-fm_var <- function(predicate, weight, fm, ID = NULL,
-                   breakdown = NULL, type = 'bootstrap',
+fm_var <- function(predicate, weight,
+                   fm, ID = NULL,
+                   type = 'bootstrap',
                    R = 100, M = NULL,
                    stratum, psu, f = 0.01,
                    verbose = FALSE,
                    HCR, interval = c(1,10), alpha = NULL,
-                   hh.size, k=3,
+                   hh.size, #k=3,
                    z_min, z_max,
                    z1, z2, b,
                    z,
+                   breakdown = NULL,
                    data = NULL) {
   if(!is.null(data)){
     predicate <- data[[predicate]]
@@ -60,7 +61,8 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
   if(is.null(ID)) ID <- seq_len(N)
   if(is.null(M)) M <- N
   if(!is.null(breakdown)) breakdown <- as.factor(breakdown)
-  switch(type, # creare funzione bootstrap e funzione jacknife da chiamare qui invece che codificarle
+  if(fm=="ZBM") k <- 3
+  switch(type, # creare funzione bootstrap e funzione jackknife da chiamare qui invece che codificarle
          bootstrap = {
            BootDistr <- sapply(1:R, function(r) {
              if(verbose == TRUE) {
@@ -73,9 +75,9 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
              if(!is.null(breakdown)) breakdown <- breakdown[bootidx]
              if(fm=="ZBM") {
                hh.size.boot <- hh.size[bootidx]
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z_min, z_max, z1, z2, b, z, breakdown)$estimate)
+               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
              } else {
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, k, z_min, z_max, z1, z2, b, z, breakdown)$estimate)
+               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
              }
 
            }, simplify = "array")
@@ -87,7 +89,7 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
              }
 
            } else {
-             var.hat <- var(BootDistr)
+             var.hat <- var(BootDistr, na.rm = TRUE)
            }
          },
          jackknife = {
@@ -129,12 +131,12 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
 
                if(!is.null(breakdown)){
                  if(fm=="ZBM") {
-                   z_hi[,,i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z, breakdown[delete.idx])$estimate
+                   z_hi[,,i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z, breakdown[delete.idx], data)$estimate
                  } else{
-                   z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z, breakdown[delete.idx])$estimate
+                   z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z, breakdown[delete.idx], data)$estimate
                  }
                } else {
-                 z_hi[i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], k , z_min, z_max, z1, z2, b, z)$estimate
+                 z_hi[i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z)$estimate
                }
              }
 
@@ -167,7 +169,15 @@ fm_var <- function(predicate, weight, fm, ID = NULL,
 
            }
          })
-  var.hat
+
+  # if(type=="bootstrap") var.hat <- list(variance = var.hat, quantiles = quantile(BootDistr, probs = c(.025, 0.5, 0.975)), type = type)
+  if(!is.null(breakdown)) {
+    var.hat <- list(variance = var.hat, size = table(breakdown), type = type)
+  } else {
+  var.hat <- list(variance = var.hat, type = type)
+  }
+  var.hat <- FuzzyPoverty(var.hat)
+  return(var.hat)
 }
 
 

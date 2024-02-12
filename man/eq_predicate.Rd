@@ -18,10 +18,10 @@ eq_predicate(predicate, ncomp, age, scale.eq, newscale)
 \item{newscale}{a data.frame with two columns: "ncomp"  defining the number of components and  "s.eq" that define the corresponding}
 }
 \value{
-A numeric vector containing the equivalised predicate variable.
+A data.frame containing the equivalised predicate variable.
 }
 \description{
-This function takes as input a numeric vector representing a predicate variable and turns it into its equivalised verision
+This function takes as input a numeric vector representing a predicate variable and turns it into its equivalised version
 using different equivalence scales.
 }
 \examples{

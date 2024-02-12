@@ -13,10 +13,10 @@ fs_construct(steps4_5, weight, alpha, breakdown = NULL)
 
 \item{alpha}{The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
 
-\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coherced to a factor.}
+\item{breakdown}{A Dimension of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a Dimension.}
 }
 \value{
-A list of results containing the fuzzy meambership function for each unit, the point estimate (i.e. the expected value of the function), and the alpha parameter.
+An object of class FuzzySupplementary containing the fuzzy membership function for each unit, the point estimate (i.e. the expected value of the function), and the alpha parameter.
 }
 \description{
 Step 7. Constructs the fuzzy supplementary poverty measure based on Steps1-6.

@@ -8,17 +8,20 @@
 #' @param z2 parameter
 #' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used.
 #' @param breakdown A factor of sub-domains to calculate estimates for.
+#' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.
 #'
 #' @return a list containing the membership function values and its expected value
 #'
 #'
-fm_cerioli<- function (x, z1, z2, weight, breakdown) {
+fm_cerioli<- function (x, z1, z2, weight, breakdown, ID) {
   if(z1 < min(x) | z1 > max(x))stop("The value of z1 has to be between the minimum and the maximum of the predicate")
   if(z2 < min(x) | z2 > max(x))stop("The value of z2 has to be between the minimum and the maximum of the predicate")
   if(z2<z1)stop("The value of z2 has to be > z1")
 
   N <- length(x)
-  y <- rep(NA, N)
+  if(is.null(ID)) ID <- seq_len(N)
+
+  y <- rep(NA_real_, N)
   y[0 <= x & x < z1] <- 1
   y[z1 <= x & x < z2] <- (z2 - x[z1 <= x & x < z2])/(z2-z1)
   y[x >= z2] <- 0
@@ -29,5 +32,10 @@ fm_cerioli<- function (x, z1, z2, weight, breakdown) {
   else {
     estimate <- weighted.mean(x = y, w = weight)
   }
-  return(list(mu = y, estimate = estimate))
+  fm_data <- data.frame(ID = ID, predicate = x, weight = weight, mu = y)
+  fm_data <- fm_data[order(fm_data$mu),]
+  return(list(results = fm_data,
+              estimate = estimate,
+              parameters = list(z1 = z1, z2 = z2),
+              fm = "cerioli"))
 }

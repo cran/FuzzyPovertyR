@@ -9,10 +9,10 @@ bootP(x, R = 500)
 \arguments{
 \item{x}{A numeric vector of a predicate variable (or poverty predicate)}
 
-\item{R}{The number of bootstrap replicates (dafaults to 500)}
+\item{R}{The number of bootstrap replicates (defaults to 500)}
 }
 \value{
-A matrix of bootrstapped percentiles
+A matrix of bootstrapped percentiles
 }
 \description{
 Calculates bootstrap percentiles from Zedini and Belhadj (2015)

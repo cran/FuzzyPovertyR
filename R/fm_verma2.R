@@ -47,7 +47,7 @@ fm_verma2 <- function (predicate, weight, ID, HCR, interval, alpha, breakdown, v
     fm_data <- split(data.frame(fm_data), f = ~ fm_data$breakdown)
     estimate <- sapply(fm_data, function(x) weighted.mean(x$mu, x$weight))
   }
-  out <- list(results = fm_data, estimate = estimate, alpha = alpha)
+  out <- list(results = fm_data, estimate = estimate, parameters = list(alpha = alpha), fm = "verma1999")
   return(out)
 }
 

@@ -9,7 +9,6 @@ fm_var(
   weight,
   fm,
   ID = NULL,
-  breakdown = NULL,
   type = "bootstrap",
   R = 100,
   M = NULL,
@@ -21,13 +20,13 @@ fm_var(
   interval = c(1, 10),
   alpha = NULL,
   hh.size,
-  k = 3,
   z_min,
   z_max,
   z1,
   z2,
   b,
   z,
+  breakdown = NULL,
   data = NULL
 )
 }
@@ -40,8 +39,6 @@ fm_var(
 
 \item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
 
-\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). Ff numeric will be coherced to a factor.}
-
 \item{type}{The variance estimation method chosen. One between \code{bootstrap} (default) or \code{jackknife}.}
 
 \item{R}{The number of bootstrap replicates. Default is 500.}
@@ -50,7 +47,7 @@ fm_var(
 
 \item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).}
 
-\item{psu}{The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).}
+\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).}
 
 \item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).}
 
@@ -64,8 +61,6 @@ fm_var(
 
 \item{hh.size}{If fm="ZBM". A numeric vector of household size.}
 
-\item{k}{If fm="ZBM". The number of change points locations to estimate.}
-
 \item{z_min}{A parameter of the membership function if fm="belhadj2011"}
 
 \item{z_max}{A parameter of the membership function if fm="belhadj2011"}
@@ -78,10 +73,12 @@ fm_var(
 
 \item{z}{A parameter of the membership function if fm="chakravarty".}
 
+\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.}
+
 \item{data}{an optional data frame containing the variables to be used.}
 }
 \value{
-The estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
+An object of class FuzzyMonetary containing the estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
 }
 \description{
 This function estimates the variance of the fuzzy monetary poverty index

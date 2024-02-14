@@ -14,7 +14,7 @@ ub2(x, z2, b)
 \item{b}{Parameter}
 }
 \value{
-returns one of the two memebership functions as of Belhadj (2015).
+returns one of the two membership functions as of Belhadj (2015).
 }
 \description{
 Fuzzy monetary poverty estimation

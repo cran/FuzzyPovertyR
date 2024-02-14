@@ -9,7 +9,7 @@ MemberhsipGradesMatrix(x, P)
 \arguments{
 \item{x}{A numeric vector of a predicate variable (or poverty predicate)}
 
-\item{P}{A matrix of bootrstapped percentiles}
+\item{P}{A matrix of bootstapped percentiles}
 }
 \value{
 The membership grade matrix

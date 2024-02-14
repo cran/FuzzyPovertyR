@@ -68,9 +68,9 @@ plot.FuzzySupplementary <- function(x,...){
 
     plot.data %>%
       ggplot2::ggplot(ggplot2::aes(x = s, y = mu)) +
-      ggplot2::geom_line() +
       ggplot2::facet_wrap(~Dimension) +
       ggplot2::geom_area(alpha = .1) +
+      ggplot2::geom_line() +
       ggplot2::scale_y_continuous(expression(mu)) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.title.y = element_text(angle = 0, vjust = 0.5),
@@ -84,7 +84,9 @@ plot.FuzzySupplementary <- function(x,...){
       tidyr::pivot_longer(!c(Size, Breakdown), names_to = "Dimension", values_to = "Variance") %>%
       ggplot2::ggplot(ggplot2::aes(x = reorder(Breakdown, Size) , y = Variance, group = 1)) +
       ggplot2::facet_wrap(~Dimension) +
-      ggplot2::geom_line() + ggplot2::geom_point() + ggplot2::geom_area(alpha = .1) +
+      ggplot2::geom_area(alpha = .1) +
+      ggplot2::geom_line() +
+      ggplot2::geom_point() +
       # geom_bar(stat = "identity", alpha = .7, color = "black") +
       ggplot2::scale_x_discrete("Breakdown (sorted by ascending sample size)") +
       ggplot2::theme_minimal()

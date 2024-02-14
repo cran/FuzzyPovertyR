@@ -45,11 +45,11 @@ fs_var(
 
 \item{M}{The size of bootstrap samples. Default is \code{nrow(data)}.}
 
-\item{stratum}{The vector identifying the stratum (if 'jacknife' is chosen as variance estimation technique).}
+\item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).}
 
-\item{psu}{The vector identifying the psu (if 'jacknife' is chosen as variance estimation technique).}
+\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).}
 
-\item{f}{The finite population correction fraction (if 'jacknife' is chosen as variance estimation technique).}
+\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).}
 
 \item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure.}
 }

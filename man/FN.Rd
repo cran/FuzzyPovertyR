@@ -16,11 +16,11 @@ FN(x, a, b, c)
 \item{c}{Membership function parameter}
 }
 \value{
-The membrship grade
+The membership grade
 }
 \description{
 Fuzzy monetary poverty estimation
 }
 \references{
-Zedini, A., & Belhadj, B. (2015). A New Approach to Unidimensional Poverty Analysis: Application to the T unisian Case. Review of Income and Wealth, 61(3), 465-476.
+Zedini, A., & Belhadj, B. (2015). A New Approach to Unidimensional Poverty Analysis: Application to the Tunisian Case. Review of Income and Wealth, 61(3), 465-476.
 }

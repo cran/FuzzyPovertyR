@@ -17,41 +17,41 @@ plot.FuzzyMonetary <- function(x,...){
       x.plot.data %>% dplyr::select(-weight) %>%
         tidyr::pivot_longer(cols = c(mu, Lorenz, WECDF), names_to = "curve", values_to = "value") %>%
         ggplot2::ggplot(ggplot2::aes(x = predicate, y = value, linetype = curve)) +
-        ggplot2::geom_line() +
-        ggplot2::scale_linetype_manual(values = c("Lorenz" = "dashed", "mu" = "solid", "WECDF" = "dotted")) +
         ggplot2::geom_area(position = "identity", alpha = .1) +
+        ggplot2::scale_linetype_manual(values = c("Lorenz" = "dashed", "mu" = "solid", "WECDF" = "dotted")) +
+        ggplot2::geom_line() +
         ggplot2::scale_x_continuous("Predicate", labels = function(x) format(x, scientific = FALSE), n.breaks = 6) +
         ggplot2::scale_y_continuous(expression(mu)) +
         ggplot2::theme_minimal() +
         ggplot2::theme(axis.title.y = element_text(angle = 0, vjust = 0.5),
                        legend.position = "bottom")
 
-    } else if (x$fm == "Verma and Betti") {
+    } else if (x$fm == "verma1999") {
       FL.curve = fm_FL(x$results$predicate, x$results$weight)
       x.plot.data = data.frame(x$results, Lorenz = FL.curve$Lorenz)
       x.plot.data %>%
         ggplot2::ggplot(ggplot2::aes(x = predicate, y = Lorenz)) +
-        ggplot2::geom_line() +
         ggplot2::geom_area(position = "identity", alpha = .1) +
+        ggplot2::geom_line() +
         ggplot2::scale_x_continuous("Predicate", labels = function(x) format(x, scientific = FALSE), n.breaks = 6) +
         ggplot2::scale_y_continuous(expression(mu)) +
         ggplot2::theme_minimal() +
         ggplot2::theme(axis.title.y = element_text(angle = 0, vjust = 0.5),
                        legend.position = "bottom")
 
-    } else if (x$fm == "Totally fuzzy and Relative") {
+    } else if (x$fm == "TFR") {
       FL.curve = fm_FL(x$results$predicate, x$results$weight)
       x.plot.data = data.frame(x$results, "WECDF" = FL.curve$WECDF)
       x.plot.data %>%
         ggplot2::ggplot(ggplot2::aes(x = predicate, y = WECDF)) +
-        ggplot2::geom_line() +
         ggplot2::geom_area(position = "identity", alpha = .1) +
+        ggplot2::geom_line() +
         ggplot2::scale_x_continuous("Predicate", labels = function(x) format(x, scientific = FALSE), n.breaks = 6) +
         ggplot2::scale_y_continuous(expression(mu)) +
         ggplot2::theme_minimal() +
         ggplot2::theme(axis.title.y = element_text(angle = 0, vjust = 0.5),
                        legend.position = "bottom")
-    } else if (x$fm == "Belhadj (2015)") {
+    } else if (x$fm == "belhadj2015") {
       par.df = data.frame(Parameters = names(x$parameters[-4]),
                           value = unlist(x$parameters[-4]),
                           y = c(0))
@@ -67,13 +67,14 @@ plot.FuzzyMonetary <- function(x,...){
         ggplot2::theme(axis.title.y = element_text(angle = 0, vjust = 0.5),
               legend.position = "bottom")
 
-    } else if (x$fm == "chakravarty" | x$fm == "Cerioli and Zani" | x$fm == "belhadj (2011)"){
+    } else if (x$fm == "chakravarty" | x$fm == "cerioli" | x$fm == "belhadj2011"){
       par.df = data.frame(Parameters = names(x$parameters),
                           value = unlist(x$parameters),
                           y = c(0))
       ggplot2::ggplot(x$results, aes(x = predicate, y = mu)) +
-        ggplot2::geom_line() + geom_area(alpha = .1) +
-        ggplot2::scale_x_continuous("Predicate") +
+        geom_area(alpha = .1) +
+        ggplot2::geom_line() +
+        ggplot2::scale_x_continuous("Predicate", labels = function(x) format(x, scientific = FALSE), n.breaks = 6) +
         ggplot2::scale_y_continuous(expression(mu)) +
         ggplot2::geom_vline(aes(xintercept = value, colour = Parameters), data = par.df, linetype = "dashed") +
         ggplot2::theme_minimal() +
@@ -108,8 +109,8 @@ plot.FuzzyMonetary <- function(x,...){
           mu = 0
         ) %>%
         ggplot2::ggplot( aes(x = predicate, y = mu)) +
-        ggplot2::geom_line(linewidth = .8) +
         ggplot2::geom_area(alpha = .1) +
+        ggplot2::geom_line(linewidth = .8) +
         ggplot2::scale_x_continuous("Predicate", labels = function(x) format(x, scientific = FALSE), n.breaks = 6) +
         ggplot2::scale_y_continuous(expression(mu)) +
         ggplot2::geom_vline(aes(xintercept = value, colour = Parameters), data = par.df, linetype = "dashed") +

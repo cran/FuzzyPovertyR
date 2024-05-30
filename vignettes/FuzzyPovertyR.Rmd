@@ -4,8 +4,11 @@ output: rmarkdown::html_vignette
 bibliography: bib.bib
 vignette: >
   %\VignetteIndexEntry{FuzzyPovertyR}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -22,9 +25,24 @@ library(kableExtra)
 
 ## Introduction
 
-`FuzzyPovertyR` is a package for estimating fuzzy poverty indexes Broadly speaking, a fuzzy poverty index is an index that ranges in the set $Q=[0,1]$. A fuzzy indexes assigns to each statistical unit a value in this interval according to a given membership function $\mu(x_i)\in Q$ where $x$ is a poverty predicate. The more the value of $\mu$ the more the individual is regarded as "poor" with respect to the poverty predicate $x$. In socio-economic surveys $x$ may be the equivalised disposable income, or expenditure. However, in principle $x$ may be a generic poverty predicate that the researcher needs to analyse, for example this could be a variable that relates to access to transports, services and other facilities.
+`FuzzyPovertyR` is a package for estimating fuzzy poverty indexes.
+Broadly speaking, a fuzzy poverty index is an index that ranges in the
+set $Q=[0,1]$ (@alkire2015multidimensional; @silber2023research). A fuzzy indexes assigns to each statistical unit a value
+in this interval according to a given membership function (mf)
+$\mu(x_i)\in Q$ where $x$ is a poverty predicate. The higher the value
+of $\mu$, the more the individual is regarded as "poor" with respect to
+the poverty predicate $x$. In socio-economic surveys $x$ may be the
+equivalised disposable income, or expenditure. However, in principle $x$
+may be a generic poverty predicate that the researcher needs to analyse,
+for example this could be a variable that relates to access to
+transports, services and other facilities.
 
-Below we distinguish between monetary and supplementary poverty indexes (or measures). A fuzzy monetary poverty measure is calculated over a `numeric` vector of length $N$ (the available sample size). A supplementary poverty index is calculated on a `data.frame` of items of a questionnaire that relates to other dimensions of poverty other than monetary.
+Below we distinguish between monetary and supplementary poverty indexes
+(or measures). A fuzzy monetary poverty measure is calculated over a
+`numeric` vector of length $n$ (the available sample size). A
+supplementary poverty index is calculated on a `data.frame` of items of
+a questionnaire that relates to other dimensions of poverty other than
+monetary.
 
 The dataset coming from the package is loaded in the environment with
 
@@ -34,149 +52,244 @@ data(eusilc)
 
 ## Fuzzy Monetary poverty measures
 
-The package lets the user choose among different membership functions trough the argument `fm` of the `fm_construct` function. The membership function available are
+The package lets the user choose among different membership functions
+trough the argument `fm` of the `fm_construct` function. The membership
+function available are:
 
-- `fm="verma"` (see @betti2008fuzzy)
+-   `fm="verma"` (see @cheli1995totally) 
+
+$$
+    \mu_i=\left(1-F_X(x_i)\right)^{\alpha-1} =
+    \left(\frac{\sum_{j=i+1} w_j|x_j> x_i}{\sum_{j\ge 2} w_j|x_j> x_1}\right)^{\alpha-1}
+$$
+
+where $F_X$ is the empirical cumulative distribution function of
+$X$ calculated for the $i-th$ individual and $w_i$ is the sampling
+weight of statistical unit $i$. The parameter $\alpha\ge 2$ is chosen so
+that the average over the function equals the head count ratio (i.e. the
+proportion of units whose equivalised disposable income falls below the
+poverty line) of the whole population.
+
+-   `fm="verma1999"` (see @betti1999measuring) 
+
+$$
+    \mu_i=(1-L_X(x_i))^{\alpha-1} =
+    \left(\frac{\sum_{j=i+1} w_jx_j|x_j> x_i}{\sum_{j\ge 2} w_jx_j|x_j> x_1}\right)^{\alpha-1}
+$$
+
+where $L_X$ is the Lorenz Curve of $X$ calculated for the $i-th$
+individual and $w_i$ is the sampling weight of statistical unit $i$.
+Again, the parameter $\alpha\ge 2$ is chosen once again so that the
+average over the function equals the head count ratio of the whole
+population or its estimate.
+
+-   `fm="verma"` (see @betti2008fuzzy)
 
 $$
 \begin{split}
-     \mu_i&=\left(1-F^{(M)}_i\right)^{\alpha-1}\left(1-L^{(M)}_i\right)=\\
-    &=\left(\frac{\sum_j w_j|x_j> x_i}{\sum_j w_j|x_j> x_1}\right)^{\alpha-1} \left(\frac{\sum_j w_jx_j|x_j> x_i}{\sum_j w_jx_j|x_j> x_1}\right)
+     \mu_i&=\left(1-F_X(x_i)\right)^{\alpha-1}\left(1-L_X(x_i)\right)=\\
+    &=\left(\frac{\sum_{j=i+1} w_j|x_j> x_i}{\sum_{j\ge 2} w_j|x_j> x_1}\right)^{\alpha-1} \left(\frac{\sum_{j=i+1} w_jx_j|x_j> x_i}{\sum_{j\ge 2} w_jx_j|x_j> x_1}\right)
 \end{split}
 $$
 
-where $w_i$ is the sampling weight of unit $i$.
-
--   `fm="ZBM"` (see @zedini2015new and @belhadj2010poverty)
-
-$$
-\mu_Q(x_i) = \begin{cases}
-        1                                   &   a \le x_i < b\\
-        \frac{-x_i}{c-b} + \frac{c}{c-b}    &   b \le x_i < c\\
-        0                                   &   x_i < a \cup x_i \ge c\\
-    \end{cases}
-$$
-
--   `fm="belhadj"` (see @besma2015employment)
-
-$$
-        \mu_Q(x_i) = \begin{cases}        1    & y_i < z_1\\        \mu^1 = 1-\frac{1}{2}\left(\frac{y_i-z_1}{z_1}\right)^b & z_1 \le y_i < z^{*}\\        \mu^2 = 1-\frac{1}{2}\left(\frac{z_2 - y_i}{z_2}\right)^b   & z^{*} \le y_i < z_2\\        0     & y_i \ge z_2    \end{cases}
-$$
-
-$$
-\mu_Q(x_i) = \begin{cases}
-        1                                                                       & 0 < x_i < z_{min} \\
-        \frac{-x_i}{z_{\max} - z_{\min}} + \frac{-z_{\max}}{z_{\max} - z_{\min}}        & z_{min} \le x_i < z_{max}\\
-        0                                                                       & x_i \ge z_max
-    \end{cases}
-$$
+Again, the parameter $\alpha\ge 2$ is chosen once again so that the
+average over the function equals the head count ratio of the whole
+population or its estimate.
 
 -   `fm="chakravarty"` (see @chakravarty2019axiomatic)
 
 $$
-\mu_Q(x_i) = \begin{cases}
+\mu_i = \begin{cases}
         1                           & x_i = 0\\
-        \frac{z'' - x_i}{z''}       & 0 \le x_i < z''\\
-        0                           & x_i \ge z''
+        \frac{z - x_i}{z}       & 0 \le x_i < z\\
+        0                           & x_i \ge z
+    \end{cases}
+$$ 
+where $z$ is a threshold to be chosen by the researcher.
+
+-   `fm="cerioli"` (see @cerioli1990fuzzy) \$\$ \mu\_i=
+
+
+$$
+ \mu_i =   \begin{cases}
+    1, \quad 0<x_i<z_1\\
+    \frac{z_2-x_i}{z_2-z_1}, \quad z_1\le x_i<z_2\\
+    0 \quad x_i\ge z_2
     \end{cases}
 $$
 
-For each of the functions below the `breakdown` argument can be specified in case the user's want to obtain estimates for given sub-domains.
+\$\$ the values $z_1$ and $z_2$ have to be chosen by the researcher.
 
-### Example using `fm=verma`
+-   `fm="ZBM"` (see @zedini2015new and @belhadj2010poverty)
 
-The computation of a fuzzy poverty index that uses the `fm="verma"`argument goes trough the following steps:
+$$
+\mu_i = \begin{cases}
+        1                                   &   a \le x_i < b\\
+        \frac{-x_i}{c-b} + \frac{c}{c-b}    &   b \le x_i < c\\
+        0                                   &   x_i < a \cup x_i \ge c\\
+    \end{cases}
+$$ where $a,c,b$ are percentiles estimated with via the bootstrap
+technique.
 
-1.  Estimation of the Head Count Ratio (HCR). The package `FuzzyPovertyR` provides the function `HCR` to estimate the Head Count Ratio from data. It outputs a list of three elements: a classification of units into being poor or not poor, the poverty line, and the value itself.
+-   `fm="belhadj2015"` (see @besma2015employment)
+
+$$
+        \mu_i = \begin{cases}        1    & x_i < z_1\\        \mu^1 = 1-\frac{1}{2}\left(\frac{x_i-z_1}{z_1}\right)^b & z_1 \le x_i < z\\        \mu^2 = 1-\frac{1}{2}\left(\frac{z_2 - x_i}{z_2}\right)^b   & z \le x_i < z_2\\        0     & x_i \ge z_2    \end{cases}
+$$ where $z^*$ is the flex point of $\mu_i$, $z_1$ and $z_2$ have to be
+chosen by the researcher, and $b\ge 1$ is a shape parameter ruling the
+degree of convexity of the function. In particular, when $b=1$ the trend
+is linear.
+
+-   `fm="belhadj2011"` (see @belhadj2011)
+
+$$
+\mu_i = \begin{cases}
+        1                                                                       & 0 < x_i < z_{min} \\
+        \frac{-x_i}{z_{\max} - z_{\min}} + \frac{-z_{\max}}{z_{\max} - z_{\min}}        & z_{min} \le x_i < z_{max}\\
+        0                                                                       & x_i \ge z_{max}
+    \end{cases}
+$$ where $z_{min}$ and $z_{MAX}$ have to be chosen by the researcher
+
+For each of the functions below the `breakdown` argument can be
+specified in case the user's want to obtain estimates for given
+sub-domains.
+
+### Example using `fm=verma`, `fm=verma1999` and `fm=ZBM`
+
+The computation of a fuzzy poverty index that uses the
+`fm="verma"`argument goes trough the following steps:
+
+1.  Estimation of the Head Count Ratio (HCR). The package
+    `FuzzyPovertyR` provides the function `HCR` to estimate the Head
+    Count Ratio from data. It outputs a list of three elements: a
+    classification of units into being poor or not poor, the poverty
+    line, and the value itself.
 
 ```{r}
 hcr = HCR(predicate = eusilc$eq_income, weight = eusilc$DB090, p = 0.5, q = 0.6)$HCR # add poverty threshold
 ```
 
-if needed, the package has a built-in function `eq_predicate` to calculate the equivalised disposable income using some equivalence scales.
+if needed, the package has a built-in function `eq_predicate` to
+calculate the equivalised disposable income using some equivalence
+scales.
 
 3.  Construction of the Fuzzy Monetary measure.
 
-```{r}
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 verma = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL,
                      HCR = hcr, interval = c(1,20), alpha = NULL, fm = "verma", verbose = FALSE)
 verma$fm
 class(verma)
 summary(verma)
-plot(verma)
+plot(verma) 
 ```
 
-
-
-When `alpha = NULL` (the default) this function solves a non-linear equation finding the value $\alpha$ in `interval` that equates the expected value of the poverty measure to the Head Count Ratio calculated above (see #eq-betti2006). This can be avoided by specifying a numeric value of $\alpha$.
+When `alpha = NULL` (the default) this function solves a non-linear
+equation finding the value $\alpha$ in `interval` that equates the
+expected value of the poverty measure to the Head Count Ratio calculated
+above (see #eq-betti2006). This can be avoided by specifying a numeric
+value of $\alpha$.
 
 ```{r}
-verma = fm_construct(predicate = eusilc$eq_income, fm = "verma1999", weight = eusilc$DB090, ID = NULL, interval = c(1,10), alpha = 2)
+verma = fm_construct(predicate = eusilc$eq_income, fm = "verma", weight = eusilc$DB090, ID = NULL, interval = c(1,10), alpha = 2)
 ```
 
 The result of `fm_construct` using `fm="verma"` is a list containing
 
--   a `data.frame` of individuals' membership functions sorted in descending order (i.e. from most poor to least poor)
+-   a `data.frame` of individuals' membership functions sorted in
+    descending order (i.e. from most poor to least poor)
 
 ```{r}
 head(verma$results)
 ```
 
--   The estimated FM measure (note that this equals the HCR if `breakdown=NULL`). However, one can obtain estimates for sub-domains using the `breakdown` argument as follows
+-   The estimated FM measure (note that this equals the HCR if
+    `breakdown=NULL`). However, one can obtain estimates for sub-domains
+    using the `breakdown` argument as follows
 
 ```{r}
-verma.break = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, HCR = hcr, interval = c(1,10), alpha = NULL, breakdown = eusilc$db040)
+verma.break = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, HCR = hcr, interval = c(1,10), alpha = NULL, breakdown = eusilc$db040, 
+fm="verma")
 ```
 
 ```{r}
 summary(verma.break)
-plot(verma.break)
 verma.break$estimate
 ```
 
 -   The `alpha` parameter.
 
 ```{r}
-alpha = verma$alpha
+alpha = verma$parameters$alpha
 alpha
+```
+With almost identical procedures is also possible to compute the index for `fm="verma1999"` and `fm="TFR"`. 
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+verma1999 = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID =                         NULL, HCR = hcr, interval = c(1,20), alpha = NULL, fm =                             "verma1999", verbose = FALSE)
+verma1999$fm
+class(verma1999)
+summary(verma1999)
+plot(verma1999)
+```
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+TFR = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL,
+                     HCR = hcr, interval = c(1,20), alpha = NULL, fm = "TFR", verbose = FALSE)
+TFR$fm
+class(TFR)
+summary(TFR)
+plot(TFR)
 ```
 
 
-### Example using `fm=belhadj2015`
+### Example using `fm=belhadj2015` and `fm=cerioli`
 
-The construction of a fuzzy index using the membership function as @besma2015employment is obtained by specifying `fm="belhadj"`. The arguments `z1`, `z2` and `b` need user's specification (see Formula above and @besma2015employment).
+The construction of a fuzzy index using the membership function as
+@besma2015employment or @cerioli1990fuzzy is obtained by specifying `fm="belhadj2015"` or `fm="cerioli"`. Let us begin by `fm="belhadj2015"`. For this mf the arguments `z1`, `z2` and `b` need user's specification. The value `z` that correspond to the flex points of the mf or to the point where the two mf touch together is calculated by the function.
 
-The value `z` that correspond to the flex points of the mf or to the point where the two mf touch together is calculated by the function and returned as `z_star`.
-
-The parameter `b` $(>=1)$ rules the shape of the membership functions (set `b=1` for linearity)
+The parameter `b` $(>=1)$ rules the shape of the membership functions
+(set `b=1` for linearity)
 
 ```{r}
 z1 = 20000; z2 = 70000; b = 2
 belhadj = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "belhadj2015", z1 = z1, z2 = z2, b = b) 
 ```
 
-```{r}
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 summary(belhadj)
 plot(belhadj)
 ```
 
+Using `fm="cerioli"`. Again we have to set the values of `z1`, `z2` as follows:
 
-### Example using `fm=chakravarty`
+```{r}
+z1 = 10000; z2 = 70000
+cerioli = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "cerioli", z1 = z1, z2 = z2) 
+```
 
-@chakravarty2019axiomatic axiomatic fuzzy index is obtained setting `fm = "chakravarty"`. The argument `z` needs user's specification
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+summary(cerioli)
+plot(cerioli)
+```
+
+### Example using `fm=chakravarty` and `fm=belhadj2011`
+
+@chakravarty2019axiomatic fuzzy index is obtained setting
+`fm = "chakravarty"`. The argument `z` needs user's specification as follows:
 
 ```{r}
 z = 60000
 chakravarty = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "chakravarty", z = z)
 ```
 
-
-```{r}
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 summary(chakravarty)
 plot(chakravarty)
 ```
 
-again is is possible to specify the `breakdown` argument to obtain estimates at sub-domains.
+again is is possible to specify the `breakdown` argument to obtain
+estimates at sub-domains.
 
 ```{r}
 chakravarty.break = fm_construct(predicate = eusilc$eq_income, eusilc$DB090, fm = "chakravarty", z = z, breakdown = eusilc$db040)
@@ -186,11 +299,40 @@ chakravarty.break = fm_construct(predicate = eusilc$eq_income, eusilc$DB090, fm 
 knitr::kable(data.frame(verma.break$estimate, chakravarty.break$estimate), col.names = c("Verma", "Chakravarty"), digits = 4)
 ```
 
+Instead, for `fm = "belhadj2011"` the values of $z_{min}$ and $z_{MAX}$ need user's specification as follows:
+
+```{r}
+zmin = 5000; zmax = 60000
+
+belhadj2011 = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm =                           "belhadj2011", z_min = zmin, z_max = zmax)
+```
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+summary(belhadj2011)
+plot(belhadj2011)
+```
+
+### Example using `fm=ZBM` 
+
+As previously showed to compute the index related to this mf is necessary to compute three parameters $a, b, c$ which are computed with bootstrap techniques (@zedini2015new). Moreover the definition of the index require the knowledge of the household size. The index is obtained as follows: 
+
+
+```{r}
+
+ZBM = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, fm =                           "ZBM", hh.size = eusilc$ncomp)
+```
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+plot(ZBM)
+```
+
+
+
 ------------------------------------------------------------------------
 
 ## Fuzzy supplementary
-
-The steps below show how to obtain a Fuzzy Supplementary (FS) poverty measure.
+The package include also a multidimensional fuzzy poverty index known as Fuzzy Supplementary (FS) index (see @betti2008fuzzy and @betti2018simplified). This index is defined with multiple steps. The package has an ad-hoc function for each step (excluding the third one). 
+The steps are:
 
 -   Step 1 - Identification
 
@@ -208,7 +350,9 @@ The steps below show how to obtain a Fuzzy Supplementary (FS) poverty measure.
 
 ### Step 1 - Identification
 
-This step is pretty simple. The user has to select the columns of the data that correspond to the items that he/she has decided to keep in the analysis.
+This step is pretty simple. The user has to select the columns of the
+data that correspond to the items that he/she has decided to keep in the
+analysis.
 
 Step 1 is done with the following selection
 
@@ -217,9 +361,32 @@ Step 1 is done with the following selection
 step1 = eusilc[,4:23]
 ```
 
+If the data in the dataset are not "ordered" in the right way, i.e. the highest values represents the highest deprivation it is possible to invert them using the following function: 
+
+```{r}
+#Create a dataframe in which the variable X is not ordered in the right way:
+data=data.frame("X"=rep(c(1,2,3,4),20), "Y"=rep(c(7,8,9,1),20))
+
+#Crete vec_order a vector of length n with TRUE or FALSE. True if the order of the variable is to be inverted, False otherwise
+
+vec_order=c(TRUE,FALSE)
+
+head(fs_order(data=data, vec_order))
+```
+
+
 ### Step 2 - Transformation
 
-In this step the items are mapped from their original space to the $[0,1]$ interval using the function `fs_transform` (see [@betti2018simplified; @betti2008fuzzy])
+In this step the items are mapped from their original space to the
+$[0,1]$ interval using the function `fs_transform` (see
+@betti2018simplified and @betti2008fuzzy). For each item, a positive score $s_{ij}$ is determined as follows
+
+$$
+s_{ij}= 1- d_{ij} = 1-\frac{1-F(c_{ij})}{1-F(1)},\quad i=1,\dots,n \quad \text{and}\quad j=1,\dots,k
+$$
+
+where $c_{ij}$ is the value of the category of the $j$-th item for the $i$-th household and $F(c_{ij})$ is the value of the $j$-th item cumulative function for the $i$-th household. This step is done as follows using the function `fs_transform`:
+
 
 ```{r}
 step2 = fs_transform(step1, weight = eusilc$DB090, ID = eusilc$ID); class(step2)
@@ -235,9 +402,18 @@ knitr::kable(head(step2$step2), digits = 3, align = "c", caption = "Transformed 
 
 ### Step 3 - Factor Analysis
 
-This fuzzy supplementary measure use factor analysis to undercover latent dimension in the data. There are multiple approaches to get factor analysis in R which we do not cover in this vignette, however the user can check for example the `lavaan` package. Anyways, factor analysis is not mandatory and the user may wish to undertake a different approach to undercover a latent structure in the data. Indeed, it is possible to skip factor analysis or to use a personal assignment of columns in dimensions.
+This fuzzy supplementary measure use factor analysis to undercover
+latent dimension in the data. There are multiple approaches to get
+factor analysis in R which we do not cover in this vignette, however the
+user can check for example the `lavaan` package. Anyways, factor
+analysis is not mandatory and the user may wish to undertake a different
+approach to undercover a latent structure in the data. Indeed, it is
+possible to skip factor analysis or to use a personal assignment of
+columns in dimensions.
 
-Regardless of the chosen method, to go trough Step 3 the user has to specify a numeric vector of the same length of the number of items selected in Step 1 that assigns each column to a given dimension.
+Regardless of the chosen method, to go trough Step 3 the user has to
+specify a numeric vector of the same length of the number of items
+selected in Step 1 that assigns each column to a given dimension.
 
 ```{r}
 dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
@@ -245,15 +421,41 @@ dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
 
 ### Steps 4 and 5 - Calculation of weights and measures within dimensions
 
-These steps computes the weights needed to aggregate transformed items values (see Step 2) into one value per dimension per unit.
+In this step, the weights to be assigned to each item, belonging to a given dimension $h$, are determined separately within each dimension. Such weighting procedure takes into account of two different aspects: the dispersion of the deprivation indicator and its correlation with other deprivation indicators in the given dimension. The weight of item $j$ belonging to dimension $h$ is taken as
 
-```{r}
+$$
+\omega_{hj}=\omega^a_{hj}\times \omega^b_{hj}, \quad h=1,\dots,H \quad \text{and}\quad j=1,\dots,k_h
+$$
+
+$\omega_{hj}^a$ is taken as proportional to the coefficient of variation of the complement to one of the positive score for the variable concerned
+
+$$
+\omega^a_{hj}\propto \frac{\sigma_{s_{hj}}}{1-\bar{s}_{hj}}
+$$
+
+where $\sigma_{s_{hj}}$ is the standard deviation of the deprivation score $s$ for item $j$ in dimension $h$ and $\bar s_{hj}$ its sample mean. The second factor  is
+
+$$
+\omega^b_{hj}\propto\Biggl(\frac{1}{1+\sum_{j=1}^{k_h}\rho_{e_{hjhj^{\ast}}}|\rho_{e_{hjhj^{\ast}}}<r^\ast_{e_{hj}}}\Biggr)\times \Biggl(\frac{1}{1+\sum_{j=1}^{k_h}\rho_{e_{hjhj^{\ast}}}|\rho_{e_{hjhj^{\ast}}}\ge r^\ast_{e_{hj}}}\Biggr)
+$$
+
+where $\rho_{e_{hjhj^{\ast}}}$ is the kendall's correlation coefficient between deprivation indicators corresponding to items j and $j^{\ast}$ in the $h$-dimension and $r^\ast_{e_{hj}}$ is a critical value. Aggregation over a group of items in a particular dimension is given by a weighted mean taken over the items in that dimension $s_{hi}=\sum w_{hj} s_{hj,i}/w_{hj}$, where $w_{hj}$ is the sampling weight of the $j$-th deprivation item in the $h$-th dimension. An overall score for the $i$-th individual is calculated as the un-weighted mean:
+
+$$
+s_i=\frac{\sum_h s_{hi}}{H}
+$$
+Those two steps are implemented in the package with the function `fs_weight`. It is necessary to define a value $\rho$ which is a critical value to be used for calculation of weights in the Kendall correlation matrix. If NULL, i.e. not defined, rho is set equal to the point of largest gap between the ordered set of correlation values encountered (see Betti and Verma, 2008). 
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL); class(steps4_5)
 summary(steps4_5)
 plot(steps4_5)
 ```
 
-The output is a longitudinal data frame that contains the weights $w_a, w_b, w = w_a\times w_b$ , the deprivation score $s_{hi}$ for unit $i$ and dimension $j$, and the overall score $s_i$ (the average over dimensions).
+The output is a longitudinal data frame that contains the weights
+$w_a, w_b, w = w_a\times w_b$ , the deprivation score $s_{hi}$ for unit
+$i$ and dimension $j$, and the overall score $s_i$ (the average over
+dimensions).
 
 ```{r}
 knitr::kable(head(steps4_5$steps4_5), digits = 4, caption = "Results from Steps 4 and 5.")
@@ -261,17 +463,34 @@ knitr::kable(head(steps4_5$steps4_5), digits = 4, caption = "Results from Steps 
 
 ### Step 6 - Calculation of the parameter $\alpha$
 
-This step is equivalent to that discussed in the Fuzzy Monetary section when `fm="verma"`. It needs either a former estimate of the Head Count Ratio or a value such that the expectation of the Fuzzy Supplementary measure has to be equal to.
+This step is equivalent to that discussed in the Fuzzy Monetary section
+when `fm="verma"`, in-fact the mf is defined as: 
+$$
+ \mu_i=(1-F_S(s_i)^{\alpha-1}(1-L_S(s_i)).
+$$
+The function `fs_equate` is used to find the value of $\alpha$ such that the expected value of the mf equals the HCR. 
 
 ```{r}
 alpha = fs_equate(steps4_5 = steps4_5, weight = eusilc$DB090, HCR = hcr, interval = c(1,10))
 ```
 
-(*alternatively a user's defined specification of the `alpha` argument can be used as well.*)
+(*alternatively a user's defined specification of the `alpha` argument
+can be used as well.*)
 
 ### Step 7 - Construction of the Fuzzy Supplementary measure.
 
-```{r}
+The parameter $\alpha$ estimated is used to calculate the fuzzy supplementary mf for each dimension of deprivation separately as follows. The FS indicator for the $h-th$ deprivation dimension for the $i-th$ individual is defined as combination of the $(1-F_{(S),hi})$ indicator and the $(1-L_{(S),hi})$ indicator.
+
+$$
+\begin{split}
+      \mu_{hi}&=\biggl(1-F_{S_{h}}(s_{hi})\Biggr)^{\alpha-1}\biggl(1-L_{S_h}(s_{hi})\Biggr)=\\
+      &=\Biggl[\frac{\sum_{\gamma=i+1}w_{h\gamma}|s_{h\gamma}>s_{hi}}{\sum_{\gamma\ge 2}w_{h\gamma}|s_{h\gamma}>s_{h1}}\Biggr]^{\alpha-1}\Biggl[\frac{\sum_{\gamma=i+1}w_{h\gamma}s_{h\gamma}|s_{h\gamma}>s_{hi}}{\sum_{\gamma\ge 2}w_{h\gamma}s_{h\gamma}|s_{h\gamma}>s_{h1}}\Biggr]
+\end{split}
+$$
+The function `fs_construct` is used to compute the FS for each dimension and overall as follows: 
+
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 FS = fs_construct(steps4_5 = steps4_5, weight = eusilc$DB090, alpha = alpha, breakdown = NULL) # no breakdown
 summary(FS)
 
@@ -282,7 +501,9 @@ plot(FS)
 
 The output of the `fs_construct` function is a list containing:
 
--   `membership` a `list` containing the FS measures for each statistical unit in the sample. Results for each dimension can be obtained by
+-   `membership` a `list` containing the FS measures for each
+    statistical unit in the sample. Results for each dimension can be
+    obtained by
 
 -   `estimate` the average of the membership function for each dimension
 
@@ -290,23 +511,35 @@ The output of the `fs_construct` function is a list containing:
 FS$estimate
 ```
 
-- `alpha` the parameter $\alpha$ estimated from data.
+-   `alpha` the parameter $\alpha$ estimated from data.
 
-Again, it is possible to obtain results for sub-domains by specifying the `breakdown` argument
+Again, it is possible to obtain results for sub-domains by specifying
+the `breakdown` argument
 
 ```{r echo=FALSE}
 knitr::kable(fs_construct(steps4_5 = steps4_5, weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)$estimate, digits = 4 )
 ```
 
+
+The package contains also a function named  `fs_construct_all` which constructs the fuzzy supplementary poverty measure based without step-by-step functions.
+
 ------------------------------------------------------------------------
 
 ## Variance Estimation
 
-The variance of each Fuzzy Monetary measure can be estimated either via Bootstrap or Jackknife Repeated Replications. We recommend the former each time the user has no knowledge of the sampling design, while we recommend the Jackknife when there is full information on the design and of the PSUs (see @betti2018simplified).
+The variance of each Fuzzy Monetary measure can be estimated either via
+Bootstrap or Jackknife Repeated Replications. We recommend the former
+each time the user has no knowledge of the sampling design, while we
+recommend the Jackknife when there is full information on the design and
+of the PSUs (see @betti2018simplified). In the following, for the unidimensional indices, we report only the examples linked with `fm=verma`. For the other specification of the mf the function is identical the only changes are linked with the parameters required by the mf (see `fm_construct`).
 
 ### Example using `fm=verma`
 
-In case of `fm="verma"`, we recommend the user to use the value of `alpha` from obtained from the function `fm_construct`. It is possible to specify different values of the parameter (i.e. `alpha=2`). We do not recommend to leave the argument `alpha=NULL` for the computation of variance.
+In case of `fm="verma"`, we recommend the user to use the value of
+`alpha` from obtained from the function `fm_construct`. It is possible
+to specify different values of the parameter (i.e. `alpha=2`). We do not
+recommend to leave the argument `alpha=NULL` for the computation of
+variance.
 
 ```{r}
 alpha = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = NULL, HCR = 0.12, interval = c(1,10), alpha = NULL)$alpha
@@ -322,15 +555,18 @@ fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", type =
 
 which gives the bootstrap estimate or the jackknife estimate.
 
-If there are multiple sub-domains or sub-populations that need variance estimation, the user can specify this breakdown to the `breakdown` argument of the function `fm_var`. For example:
+If there are multiple sub-domains or sub-populations that need variance
+estimation, the user can specify the breakdown to the `breakdown`
+argument of the function `fm_var`. For example:
 
 ```{r echo=FALSE}
-knitr::kable(cbind(
-  Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE)$variance,
-  Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = hcr, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F))$variance, caption = 'Variance estimates for sub-domains')
+
+Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE) %>% summary()
+
+Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = hcr, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)%>% summary()
 ```
 
-```{r}
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE)
 
 plot(Bootstrap)
@@ -343,13 +579,12 @@ Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "ve
 ```{r eval=FALSE}
 variance = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = NULL, HCR = 0.12, alpha = 2, rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = F)
 summary(variance)
-plot(variance)
 ```
 
-```{r}
+```{r, echo=FALSE, fig.height=6, fig.width=6}
 Bootstrap = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, 
                   dimensions = dimensions, breakdown = eusilc$db040, HCR = .12,
-                   alpha = 2, rho = NULL, type = 'bootstrap', M = NULL, R = 100, verbose = F) 
+                   alpha = 2, rho = NULL, type = 'bootstrap', M = NULL, R = 10, verbose = F) 
 plot(Bootstrap)
 ```
 
@@ -357,6 +592,8 @@ The following uses the Jackknife
 
 ```{r eval=FALSE}
 fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, 
-       stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01) %>% summary()
-       breakdown = eusilc$db040, HCR = .12, alpha = 2, rho = NULL, type = 'jackknife', 
+       stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01,
+       breakdown = eusilc$db040, alpha = 3, rho = NULL, type = "jackknife")%>%summary()
+
+
 ```

@@ -1,4 +1,4 @@
-#' Fuzzy supplementary poverty estimation
+#' Fuzzy supplementary poverty estimation (Step 2)
 #'
 #' @description Step 2. This function maps a set of answers to binary or categorical items to the (0,1) interval.
 #'
@@ -8,8 +8,8 @@
 #' Lower levels of the items have to correspond to more deprivation while higher levels of the items to a less deprivation.
 #'
 #' @param data A matrix or a data frame of identified items (see Step 1 of Betti et. al, 2018)
-#' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
-#' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.
+#' @param weight A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)
+#' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence
 #' @param depr.score The deprivation score to be used (see d or s in Betti et al (2018))
 #' @param ... other parameters
 #'
@@ -17,9 +17,13 @@
 #' @export
 #'
 #' @examples
-#' data(eusilc)
+#' #This example is based on the dataset eusilc included in the package
+#' #step 1 is the choice of the eusilc dataset 
+#' 
+#' #Step 2 
+#' 
 #' step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
-#'
+#' 
 #' @references
 #' Betti, G., Gagliardi, F., Lemmi, A., & Verma, V. (2015). Comparative measures of multidimensional deprivation in the European Union. Empirical Economics, 49(3), 1071-1100.
 #'

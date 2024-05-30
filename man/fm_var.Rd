@@ -33,49 +33,49 @@ fm_var(
 \arguments{
 \item{predicate}{A numeric vector representing the poverty predicate (i.e. income or expenditure)}
 
-\item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
+\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
 
-\item{fm}{the type of membership function to use}
+\item{fm}{The membership function (default is "verma". Other options are "ZBM", "belhadj2015", "belhadj2011", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al., 2023)}
 
-\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
+\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence}
 
-\item{type}{The variance estimation method chosen. One between \code{bootstrap} (default) or \code{jackknife}.}
+\item{type}{The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`}
 
-\item{R}{The number of bootstrap replicates. Default is 500.}
+\item{R}{The number of bootstrap replicates. Default is 500}
 
-\item{M}{The size of bootstrap samples. Default is \code{nrow(data)}.}
+\item{M}{The size of bootstrap samples. Default is `nrow(data)`}
 
-\item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).}
+\item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).}
+\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).}
+\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure.}
+\item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure}
 
-\item{HCR}{If fm="verma" or fm="verma1999" or fm="TFR" . The value of the head count ratio.}
+\item{HCR}{If fm="verma" or fm="verma1999" or fm="TFR" . The value of the head count ratio used to compute alpha so that the membership function equals the HCR}
 
-\item{interval}{If fm="verma" or fm="verma1999" or fm="TFR". A numeric vector of length two to look for the value of alpha (if not supplied).}
+\item{interval}{If fm="verma" or fm="verma1999" or fm="TFR". A numeric vector of length two to look for the value of alpha (if not supplied)}
 
-\item{alpha}{If fm="verma" or fm="verma1999" or fm="TFR". The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR}
+\item{alpha}{The value of the exponent in equations of "verma", "verma1999" and "TFR". If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
 
-\item{hh.size}{If fm="ZBM". A numeric vector of household size.}
+\item{hh.size}{If fm="ZBM". A numeric vector of household size}
 
-\item{z_min}{A parameter of the membership function if fm="belhadj2011"}
+\item{z_min}{A parameter of the membership function if fm="belhadj2011", i.e. the z_min: $mu=1 for 0 <y_i<z_min$ (see: See Betti et. al, 2023)}
 
-\item{z_max}{A parameter of the membership function if fm="belhadj2011"}
+\item{z_max}{A parameter of the membership function if fm="belhadj2011", i.e. the z_max: $mu=0 for y_i>z_max$ (see: See Betti et. al, 2023)}
 
-\item{z1}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli"}
+\item{z1}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli". For  "belhadj2015" z1: $mu=1 for y_i<z1$ while for  "cerioli" $mu=1 for 0 <y_i<z1$ (see: See Betti et. al, 2023)}
 
-\item{z2}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli"}
+\item{z2}{A parameter of the membership function if fm="belhadj2015" or fm="cerioli". For  "belhadj2015" z2: $mu=0 for y_i>z2$   while for  "cerioli" the z1: $mu=0 for y_i>z2$ (see: See Betti et. al, 2023)}
 
 \item{b}{A parameter of the membership function if fm="belhadj2015". The shape parameter (if b=1 the mf is linear between z1 and z2)}
 
-\item{z}{A parameter of the membership function if fm="chakravarty".}
+\item{z}{A parameter of the membership function if fm="chakravarty", i.e. $mu=0 for y_i>=z$ (see: See Betti et. al, 2023)}
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.}
 
-\item{data}{an optional data frame containing the variables to be used.}
+\item{data}{an optional data frame containing the variables to be used}
 }
 \value{
 An object of class FuzzyMonetary containing the estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
@@ -84,10 +84,58 @@ An object of class FuzzyMonetary containing the estimate of variance with the me
 This function estimates the variance of the fuzzy monetary poverty index
 }
 \examples{
-data(eusilc)
-HCR <- 0.14
-hh.size <- rep(1, 1000)
-fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
-fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = .14, alpha = 9)
+#The following examples are based on the dataset eusilc 
+#included in the package. 
 
+#Example 1 using bootstrap and breakdown
+
+#fm = "verma" 
+
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
+       fm = "verma", breakdown = eusilc$db040, type = "bootstrap",
+       alpha = 4)
+
+#fm = "belhadj2015" 
+
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
+       fm = "belhadj2015", breakdown = eusilc$db040, type = "bootstrap",
+       z1 = 100, z2 = 15000, b = 2)
+
+
+#Example 2 using jackknife without breakdown
+
+#fm = "verma1999" 
+
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
+       fm = "verma1999",  type = "jackknife",
+       stratum = eusilc$stratum , psu = eusilc$psu,
+       alpha = 4)
+       
+#fm = "cerioli" 
+
+fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
+       fm = "cerioli",  type = "jackknife",
+       stratum = eusilc$stratum , psu = eusilc$psu,
+       z1 = 1000, z2 = 12000)
+}
+\references{
+Belhadj, B. (2011). A new fuzzy unidimensional poverty index from an information theory perspective. Empirical Economics, 40(1):687–704.
+
+Belhadj, B. (2015). Employment measure in developing countries via minimum wage and poverty new fuzzy approach. Opsearch, 52(1):329–339.
+
+Betti, G., Cheli, B., Lemmi, A., and Verma, V. (2006). Multidimensional and longitudinal poverty: an integrated fuzzy approach. In Betti, G. and Lemmi, A., editors, Fuzzy set approach to multidimensional poverty measurement, pages 115–137. Springer, Boston, USA.
+
+Betti, G., D’Agostino, A., Lemmi, A., & Neri, L. (2023). The fuzzy approach to poverty measurement. In Research Handbook on Measuring Poverty and Deprivation Edited by Silber, J. (pp. 489-500). Edward Elgar Publishing.
+
+Betti, G. and Verma, V. (1999). Measuring the degree of poverty in a dynamic and comparative context: a multi-dimensional approach using fuzzy set theory. In Proceedings, iccs-vi, volume 11, pages 289–300.
+
+Cerioli, A. and Zani, S. (1990). A fuzzy approach to the measurement of poverty. In Income and Wealth Distribution, Inequality and Poverty: Proceedings of the Second International Conference on Income Distribution by Size: Generation, Distribution, Measurement and Applications., 272–284. Springer, Boston, USA.
+
+Chakravarty, S. R. (2006). An Axiomatic Approach to Multidimensional Poverty Measurement via Fuzzy Sets. Fuzzy Set Approach to Multidimensional Poverty Measurement, 49-72.
+
+Cheli, B. and Lemmi, A. (1995). A ’totally’ fuzzy and relative approach to the multidimensional analysis of poverty. 24(1):115–134.
+
+Zedini, A. and Belhadj, B. (2015). A new approach to unidimensional poverty analysis: Application to the Tunisian case. Review of Income and Wealth, 61(3):465–476.
+
+Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
 }

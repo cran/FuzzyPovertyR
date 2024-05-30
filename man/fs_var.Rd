@@ -23,35 +23,35 @@ fs_var(
 )
 }
 \arguments{
-\item{data}{A matrix or data frame of items.}
+\item{data}{A matrix or data frame of items}
 
-\item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used}
+\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
 
-\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence.}
+\item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence}
 
-\item{dimensions}{A numeric vector (of length  \code{ncol(data)}) of assignments of items in data to dimensions.}
+\item{dimensions}{A numeric vector (of length  `ncol(data)`) of assignments of items in data to dimensions}
 
-\item{HCR}{The head count ratio.}
+\item{HCR}{The value of the head count ratio used to compute alpha so that the expected value of the membership function equals HCR}
 
-\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.}
+\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor}
 
-\item{alpha}{The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
+\item{alpha}{The value of the exponent in equations of "verma", "verma1999" and "TFR". If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
 
-\item{rho}{The critical value to be used for calculation of weights in the kendall correlation matrix.}
+\item{rho}{Optional critical value to be used for calculation of weights in the Kendall correlation matrix. If NULL rho is set equal to the point of largest gap between the ordered set of correlation values encountered (see Betti and Verma, 2008)}
 
-\item{type}{The variance estimation method chosen. One between \code{bootstrap} (default) or \code{jackknife}.}
+\item{type}{The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`}
 
-\item{R}{The number of bootstrap replicates. Default is 500.}
+\item{R}{The number of bootstrap replicates. Default is 500}
 
-\item{M}{The size of bootstrap samples. Default is \code{nrow(data)}.}
+\item{M}{The size of bootstrap samples. Default is `nrow(data)`}
 
-\item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique).}
+\item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique).}
+\item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique).}
+\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure.}
+\item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure}
 }
 \value{
 An object of class FuzzySupplementary containing the estimated variance.
@@ -60,8 +60,39 @@ An object of class FuzzySupplementary containing the estimated variance.
 Fuzzy supplementary poverty estimation.
 }
 \examples{
-dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
-fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
-dimensions = dimensions, breakdown = NULL, HCR = .16, alpha = 2,
-rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = TRUE)
+
+#This example is based on the dataset eusilc included in the package
+#The  variance of the FS index is compute without breakdown 
+#and using an alpha = 2
+
+#############
+##Bootstrap##
+#############
+
+ fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
+       dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), 
+       breakdown = NULL, alpha = 2,
+       rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = TRUE)
+       
+#Do not run 
+
+#############
+##Jackknife##
+#############
+
+ #fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
+ #      dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), # step 3
+ #      breakdown = NULL, alpha = 2,
+ #      rho = NULL, type = 'jackknife', 
+ #     M = NULL, stratum = eusilc$stratum,
+ #      psu = eusilc$psu, verbose = FALSE)
+       
+       
+}
+\references{
+Betti, G., & Verma, V. (2008). Fuzzy measures of the incidence of relative poverty and deprivation: a multi-dimensional perspective. Statistical Methods and Applications, 17, 225-250.
+
+Betti, G., Gagliardi, F., Lemmi, A., & Verma, V. (2015). Comparative measures of multidimensional deprivation in the European Union. Empirical Economics, 49(3), 1071-1100.
+
+Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
 }

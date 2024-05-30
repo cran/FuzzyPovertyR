@@ -7,7 +7,19 @@
 #' @import ggplot2
 #' @return The plot
 #' @export
+#' 
+#' @examples
+#' 
+#' #The following example is based on the dataset eusilc 
+#' #included in the package. 
+#' 
+#' 
+#' #fm = "verma"
 #'
+#' index = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+#'              fm = "verma", HCR = 0.154, ID = eusilc$ID)
+#'
+#' plot(index)
 
 plot.FuzzyMonetary <- function(x,...){
   if(!is.null(x$fm)){

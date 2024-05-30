@@ -7,14 +7,15 @@
 #' fraction of a weighted quantile (in official statistics the median) of the predicate distribution
 #'
 #' @param predicate A numeric vector of a predicate variable (i.e. income or expenditure)
-#' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used.
-#' @param p The quantile to be calculated from the predicate variable. Default is the median.
-#' @param q The percentage of the quantile to be used in determining the poverty line. default is 0.6.
+#' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
+#' @param p The quantile to be calculated from the predicate variable. Default is the median
+#' @param q The percentage of the quantile to be used in determining the poverty line. default is 0.6
 #' @param poverty.line The poverty line. If it is NULL it is estimated from data.
-#' @return A list containing the classification of the units as poor (TRUE) and not-poor (FALSE), the estimated Head Count Ratio, and the poverty line.
+#' @return A list containing the classification of the units as poor (TRUE) and not-poor (FALSE), the estimated Head Count Ratio, and the poverty line
 #' @export
 #'
 #' @examples
+#' 
 #' N <- 100
 #' p <- 0.5
 #' q <- 0.6

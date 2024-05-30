@@ -9,16 +9,16 @@ HCR(predicate, weight = NULL, p = 0.5, q = 0.6, poverty.line = NULL)
 \arguments{
 \item{predicate}{A numeric vector of a predicate variable (i.e. income or expenditure)}
 
-\item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used.}
+\item{weight}{A numeric vector of sampling weights. if NULL simple random sampling weights will be used}
 
-\item{p}{The quantile to be calculated from the predicate variable. Default is the median.}
+\item{p}{The quantile to be calculated from the predicate variable. Default is the median}
 
-\item{q}{The percentage of the quantile to be used in determining the poverty line. default is 0.6.}
+\item{q}{The percentage of the quantile to be used in determining the poverty line. default is 0.6}
 
 \item{poverty.line}{The poverty line. If it is NULL it is estimated from data.}
 }
 \value{
-A list containing the classification of the units as poor (TRUE) and not-poor (FALSE), the estimated Head Count Ratio, and the poverty line.
+A list containing the classification of the units as poor (TRUE) and not-poor (FALSE), the estimated Head Count Ratio, and the poverty line
 }
 \description{
 This function calculates the head count ratio.
@@ -29,6 +29,7 @@ whose vale of the predicate variable is below the poverty line. The poverty line
 fraction of a weighted quantile (in official statistics the median) of the predicate distribution
 }
 \examples{
+
 N <- 100
 p <- 0.5
 q <- 0.6

@@ -1,10 +1,10 @@
-#' Fuzzy supplementary poverty estimation.
+#' Fuzzy supplementary poverty estimation (Step 7)
 #'
 #' @description Step 7. Constructs the fuzzy supplementary poverty measure based on Steps1-6.
 #'
 #' @param steps4_5 The results from `fs_equate`.
-#' @param weight A numeric vector of sampling weights. if NULL simple random sampling weights will be used
-#' @param alpha The value of the exponent in equation $E(mu)^(alpha-1) = HCR$. If NULL it is calculated so that it equates the expectation of the membership function to HCR.
+#' @param weight A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)
+#' @param alpha The value of the exponent in the FM equation. If NULL it is calculated so that it equates the expectation of the membership function to HCR.
 #' @param breakdown A Dimension of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a Dimension.
 #'
 #' @import dplyr
@@ -12,19 +12,45 @@
 #' @export
 #'
 #' @examples
-#' data(eusilc)
+#' 
+#' #This example is based on the dataset eusilc included in the package
+#' #The FS index is compute without and with breakdown and using an HCR = 0.12
+#' #The step 2-5 are the following (step 1 is the eusilc dataset)
+#' #For more on each step see the ad hoc function included in the package
+#' 
+#' #Step 2 
+#' 
 #' step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
+#' 
+#' #Step 3 is the definition of the dimension.
+#' #For more about the step see Betti et al. (2018)
+#' 
 #' dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
+#' 
+#' #Step 4-5 finding weights 
+#' 
 #' steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
+#' 
+#' #Step 6 computation of alpha parameter
+#' 
 #' alpha <- fs_equate(steps4_5 = steps4_5,
-#' weight = eusilc$DB090, HCR = .16, interval = c(1,10))
+#'                    weight = eusilc$DB090, HCR = 0.12, 
+#'                    interval = c(1,10))
 #'
+#' #Step 7 the FS index without breakdown
+#' 
 #' fs_results = fs_construct(steps4_5 = steps4_5,
-#' weight = eusilc$DB090, alpha = alpha, breakdown = NULL)
+#'              weight = eusilc$DB090, alpha = alpha, breakdown = NULL)
 #'
+#' #Step 7 the FS index with breakdown
+#' 
 #' fs_results = fs_construct(steps4_5 = steps4_5,
-#' weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)
-
+#'              weight = eusilc$DB090, alpha = alpha, breakdown = eusilc$db040)
+#' @references
+#' Betti, G., Gagliardi, F., Lemmi, A., & Verma, V. (2015). Comparative measures of multidimensional deprivation in the European Union. Empirical Economics, 49(3), 1071-1100.
+#'
+#' Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
+#'
 fs_construct <- function(steps4_5, weight, alpha, breakdown = NULL){
   steps4_5 <- steps4_5$steps4_5
   if(!is.null(alpha)) if(alpha < 1) stop("The value of alpha has to be >=1")

@@ -9,7 +9,7 @@ fm_var(
   weight,
   fm,
   ID = NULL,
-  type = "bootstrap",
+  type = "bootstrap_naive",
   R = 100,
   M = NULL,
   stratum,
@@ -26,6 +26,8 @@ fm_var(
   z2,
   b,
   z,
+  Xs,
+  total,
   breakdown = NULL,
   data = NULL
 )
@@ -33,17 +35,17 @@ fm_var(
 \arguments{
 \item{predicate}{A numeric vector representing the poverty predicate (i.e. income or expenditure)}
 
-\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
+\item{weight}{A numeric vector of sampling weights of the same length of predicate. if NULL weights will set equal to n (n = sample size)}
 
 \item{fm}{The membership function (default is "verma". Other options are "ZBM", "belhadj2015", "belhadj2011", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al., 2023)}
 
 \item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence}
 
-\item{type}{The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`}
+\item{type}{The variance estimation method chosen. One between \code{bootstrap_naive} (default), \code{bootstrap_calibrated} or \code{jackknife}}
 
 \item{R}{The number of bootstrap replicates. Default is 500}
 
-\item{M}{The size of bootstrap samples. Default is `nrow(data)`}
+\item{M}{The size of bootstrap samples. Default is \code{nrow(data)}}
 
 \item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique)}
 
@@ -73,9 +75,13 @@ fm_var(
 
 \item{z}{A parameter of the membership function if fm="chakravarty", i.e. $mu=0 for y_i>=z$ (see: See Betti et. al, 2023)}
 
-\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor.}
+\item{Xs}{A matrix (i x j) of calibration variables. i number of units, j number of variables}
 
-\item{data}{an optional data frame containing the variables to be used}
+\item{total}{A Vector of population totals of dimension 1 x j}
+
+\item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor}
+
+\item{data}{An optional data frame containing the variables to be used}
 }
 \value{
 An object of class FuzzyMonetary containing the estimate of variance with the method selected. if breakdown is not NULL, the variance is estimated for each sub-domain.
@@ -84,34 +90,34 @@ An object of class FuzzyMonetary containing the estimate of variance with the me
 This function estimates the variance of the fuzzy monetary poverty index
 }
 \examples{
-#The following examples are based on the dataset eusilc 
-#included in the package. 
+#The following examples are based on the dataset eusilc
+#included in the package.
 
 #Example 1 using bootstrap and breakdown
 
-#fm = "verma" 
+#fm = "verma"
 
 fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
-       fm = "verma", breakdown = eusilc$db040, type = "bootstrap",
-       alpha = 4)
+       fm = "verma", breakdown = eusilc$db040, type = "bootstrap_calibrated",
+       alpha = 4, Xs = eusilc[,4:6], total = c(20, 30, 40))
 
-#fm = "belhadj2015" 
+#fm = "belhadj2015"
 
 fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
-       fm = "belhadj2015", breakdown = eusilc$db040, type = "bootstrap",
+       fm = "belhadj2015", breakdown = eusilc$db040, type = "bootstrap_naive",
        z1 = 100, z2 = 15000, b = 2)
 
 
 #Example 2 using jackknife without breakdown
 
-#fm = "verma1999" 
+#fm = "verma1999"
 
 fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
        fm = "verma1999",  type = "jackknife",
        stratum = eusilc$stratum , psu = eusilc$psu,
        alpha = 4)
-       
-#fm = "cerioli" 
+
+#fm = "cerioli"
 
 fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
        fm = "cerioli",  type = "jackknife",

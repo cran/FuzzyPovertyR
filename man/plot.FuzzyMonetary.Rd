@@ -19,8 +19,8 @@ plot method for class "FuzzyMonetary"
 }
 \examples{
 
-#The following example is based on the dataset eusilc 
-#included in the package. 
+#The following example is based on the dataset eusilc
+#included in the package.
 
 
 #fm = "verma"

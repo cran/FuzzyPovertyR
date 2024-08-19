@@ -13,23 +13,25 @@ fs_var(
   breakdown = NULL,
   alpha,
   rho = NULL,
-  type = "bootstrap",
+  type = "bootstrap_naive",
   R = 500,
   M = NULL,
   stratum,
   psu,
   f = 0.01,
+  Xs,
+  total,
   verbose = TRUE
 )
 }
 \arguments{
 \item{data}{A matrix or data frame of items}
 
-\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
+\item{weight}{A numeric vector of sampling weights of length nrow(step1). if NULL weights will set equal to n (n = sample size)}
 
 \item{ID}{A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence}
 
-\item{dimensions}{A numeric vector (of length  `ncol(data)`) of assignments of items in data to dimensions}
+\item{dimensions}{A numeric vector (of length  \code{ncol(data)}) of assignments of items in data to dimensions}
 
 \item{HCR}{The value of the head count ratio used to compute alpha so that the expected value of the membership function equals HCR}
 
@@ -39,17 +41,21 @@ fs_var(
 
 \item{rho}{Optional critical value to be used for calculation of weights in the Kendall correlation matrix. If NULL rho is set equal to the point of largest gap between the ordered set of correlation values encountered (see Betti and Verma, 2008)}
 
-\item{type}{The variance estimation method chosen. One between `bootstrap` (default) or `jackknife`}
+\item{type}{The variance estimation method chosen. One between \code{bootstrap_naive} (default), \code{bootstrap_calibrated} or \code{jackknife}}
 
 \item{R}{The number of bootstrap replicates. Default is 500}
 
-\item{M}{The size of bootstrap samples. Default is `nrow(data)`}
+\item{M}{The size of bootstrap samples. Default is \code{nrow(data)}}
 
 \item{stratum}{The vector identifying the stratum (if 'jackknife' is chosen as variance estimation technique)}
 
 \item{psu}{The vector identifying the psu (if 'jackknife' is chosen as variance estimation technique)}
 
-\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique)}
+\item{f}{The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique}
+
+\item{Xs}{A matrix (i x j) of calibration variables. i number of units, j number of variables}
+
+\item{total}{A Vector of population totals of dimension 1 x j}
 
 \item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure}
 }
@@ -62,32 +68,21 @@ Fuzzy supplementary poverty estimation.
 \examples{
 
 #This example is based on the dataset eusilc included in the package
-#The  variance of the FS index is compute without breakdown 
+#The  variance of the FS index is compute without breakdown
 #and using an alpha = 2
 
 #############
 ##Bootstrap##
 #############
 
- fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
-       dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), 
+fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
+       dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5),
        breakdown = NULL, alpha = 2,
-       rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = TRUE)
-       
-#Do not run 
+       rho = NULL, type = 'bootstrap_naive', M = NULL, R = 2, verbose = TRUE)
 
-#############
-##Jackknife##
-#############
 
- #fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
- #      dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), # step 3
- #      breakdown = NULL, alpha = 2,
- #      rho = NULL, type = 'jackknife', 
- #     M = NULL, stratum = eusilc$stratum,
- #      psu = eusilc$psu, verbose = FALSE)
-       
-       
+
+
 }
 \references{
 Betti, G., & Verma, V. (2008). Fuzzy measures of the incidence of relative poverty and deprivation: a multi-dimensional perspective. Statistical Methods and Applications, 17, 225-250.

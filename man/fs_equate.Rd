@@ -7,7 +7,7 @@
 fs_equate(steps4_5, weight, HCR, interval = c(1, 10), verbose = TRUE)
 }
 \arguments{
-\item{steps4_5}{The results obtained from `fs_weight`.}
+\item{steps4_5}{The results obtained from \code{fs_weight}.}
 
 \item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
 
@@ -25,11 +25,11 @@ Step 6. This function solves $E(mu)^(alpha-1) = HCR$ for alpha.
 }
 \examples{
 #This example is based on the dataset eusilc included in the package
-#The Step 6 of the FS index is computed 
+#The Step 6 of the FS index is computed
 #The step 2-5 are the following (step 1 is the eusilc dataset)
 #For more on each step see the ad hoc function included in the package
 
-#Step 2 
+#Step 2
 
 step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
@@ -38,14 +38,14 @@ step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
 dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
 
-#Step 4-5 finding weights 
+#Step 4-5 finding weights
 
 steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
 
 #Step 6 computation of alpha parameter
 
 fs_equate(steps4_5 = steps4_5,
-          weight = eusilc$DB090, 
+          weight = eusilc$DB090,
           HCR = 0.12, interval = c(1,10))
 }
 \references{

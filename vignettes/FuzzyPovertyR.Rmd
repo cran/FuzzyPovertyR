@@ -528,7 +528,7 @@ The package contains also a function named  `fs_construct_all` which constructs 
 ## Variance Estimation
 
 The variance of each Fuzzy Monetary measure can be estimated either via
-Bootstrap or Jackknife Repeated Replications. We recommend the former
+Bootstrap (naive or calibrated) or Jackknife Repeated Replications. We recommend the former
 each time the user has no knowledge of the sampling design, while we
 recommend the Jackknife when there is full information on the design and
 of the PSUs (see @betti2018simplified). In the following, for the unidimensional indices, we report only the examples linked with `fm=verma`. For the other specification of the mf the function is identical the only changes are linked with the parameters required by the mf (see `fm_construct`).
@@ -546,7 +546,7 @@ alpha = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, ID = N
 ```
 
 ```{r}
-boot.var = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma",  type = "bootstrap", HCR = .12, alpha = alpha, verbose = F, R = 10)
+boot.var = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma",  type = "bootstrap_naive", HCR = .12, alpha = alpha, verbose = F, R = 10)
 
 # plot(boot.var)
 
@@ -561,13 +561,13 @@ argument of the function `fm_var`. For example:
 
 ```{r echo=FALSE}
 
-Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE) %>% summary()
+Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap_naive", HCR = hcr, alpha = alpha, verbose = FALSE) %>% summary()
 
 Jackknife = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = hcr, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)%>% summary()
 ```
 
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
-Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap", HCR = hcr, alpha = alpha, verbose = FALSE)
+Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "bootstrap_naive", HCR = hcr, alpha = alpha, verbose = FALSE)
 
 plot(Bootstrap)
 
@@ -584,7 +584,7 @@ summary(variance)
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
 Bootstrap = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, 
                   dimensions = dimensions, breakdown = eusilc$db040, HCR = .12,
-                   alpha = 2, rho = NULL, type = 'bootstrap', M = NULL, R = 10, verbose = F) 
+                   alpha = 2, rho = NULL, type = 'bootstrap_naive', M = NULL, R = 10, verbose = F) 
 plot(Bootstrap)
 ```
 
@@ -594,6 +594,4 @@ The following uses the Jackknife
 fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, 
        stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01,
        breakdown = eusilc$db040, alpha = 3, rho = NULL, type = "jackknife")%>%summary()
-
-
 ```

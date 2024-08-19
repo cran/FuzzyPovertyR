@@ -8,20 +8,19 @@
 #' @export
 #'
 #' @examples
-#' 
-#' 
-#' #The following example is based on the dataset eusilc 
-#' #included in the package. 
-#' 
-#' 
+#'
+#'
+#' #The following example is based on the dataset eusilc
+#' #included in the package.
+#'
+#'
 #' #fm = "verma"
 #'
 #' index = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
 #'              fm = "verma", HCR = 0.154, ID = eusilc$ID)
 #'
 #' summary(index)
-
-
+#'
 summary.FuzzyMonetary <- function(object,...) {
   res <- object$results$mu; probs = c(0, .2, .4, .6, .8, 1)
 

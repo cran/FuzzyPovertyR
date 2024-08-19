@@ -7,13 +7,13 @@
 #' @import ggplot2
 #' @return The plot
 #' @export
-#' 
+#'
 #' @examples
-#' 
-#' #The following example is based on the dataset eusilc 
-#' #included in the package. 
-#' 
-#' 
+#'
+#' #The following example is based on the dataset eusilc
+#' #included in the package.
+#'
+#'
 #' #fm = "verma"
 #'
 #' index = fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,

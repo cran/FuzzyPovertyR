@@ -20,7 +20,7 @@ Detects and inverts deprivation items for FS
 \examples{
 
 #Create data
- 
+
 data=data.frame("X"=rep(c(1,2,3,4),20), "Y"=rep(c(7,8,9,1),20))
 
 #Crete vec_order

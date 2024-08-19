@@ -7,7 +7,7 @@
 fs_weight(dimensions, step2, rho = NULL)
 }
 \arguments{
-\item{dimensions}{A numeric vector (of length  `ncol(data)`) of assignments of items in data to dimensions}
+\item{dimensions}{A numeric vector (of length  \code{ncol(data)}) of assignments of items in data to dimensions}
 
 \item{step2}{The data frame resulting from step2}
 
@@ -27,7 +27,7 @@ This function calculates the two set of weights w_a and w_b (see References)
 #The step 2-3 are the following (step 1 is the eusilc dataset)
 #For more on each step see the ad hoc function included in the package
 
-#Step 2 
+#Step 2
 
 step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
@@ -36,7 +36,7 @@ step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
 dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
 
-#Step 4-5 finding weights 
+#Step 4-5 finding weights
 
 steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
 

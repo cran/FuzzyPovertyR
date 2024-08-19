@@ -15,13 +15,14 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' N <- 100
 #' p <- 0.5
 #' q <- 0.6
 #' predicate <- rchisq(N, 15) # predicate variable
 #' HCR(predicate)
 #'
+
 HCR <- function(predicate, weight = NULL, p = 0.5, q = 0.6, poverty.line = NULL) {
 
   if(is.null(weight)) weight <- rep(1/length(predicate), length(predicate))

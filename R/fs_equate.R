@@ -13,32 +13,33 @@
 #'
 #' @examples
 #' #This example is based on the dataset eusilc included in the package
-#' #The Step 6 of the FS index is computed 
+#' #The Step 6 of the FS index is computed
 #' #The step 2-5 are the following (step 1 is the eusilc dataset)
 #' #For more on each step see the ad hoc function included in the package
-#' 
-#' #Step 2 
-#' 
+#'
+#' #Step 2
+#'
 #' step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
-#' 
+#'
 #' #Step 3 is the definition of the dimension.
 #' #For more about the step see Betti et al. (2018)
-#' 
+#'
 #' dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
-#' 
-#' #Step 4-5 finding weights 
-#' 
+#'
+#' #Step 4-5 finding weights
+#'
 #' steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
-#' 
+#'
 #' #Step 6 computation of alpha parameter
-#' 
+#'
 #' fs_equate(steps4_5 = steps4_5,
-#'           weight = eusilc$DB090, 
+#'           weight = eusilc$DB090,
 #'           HCR = 0.12, interval = c(1,10))
 #' @references
 #' Betti, G., Gagliardi, F., Lemmi, A., & Verma, V. (2015). Comparative measures of multidimensional deprivation in the European Union. Empirical Economics, 49(3), 1071-1100.
 #'
 #' Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
+#'
 #'
 fs_equate <- function(steps4_5, weight, HCR, interval = c(1,10), verbose = TRUE){ # weight has to be attached to the data frame. should not be specified each time.
   steps4_5 <- steps4_5$steps4_5

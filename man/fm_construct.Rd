@@ -27,7 +27,7 @@ fm_construct(
 \arguments{
 \item{predicate}{A numeric vector representing the poverty predicate (i.e. income or expenditure)}
 
-\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
+\item{weight}{A numeric vector of sampling weights of the same length of predicate. if NULL weights will set equal to n (n = sample size)}
 
 \item{fm}{The membership function (default is "verma". Other options are "ZBM", "belhadj2015", "belhadj2011", "chakravarty", "cerioli", "verma1999" and "TFR". See Betti et. al., 2023)}
 
@@ -61,19 +61,19 @@ fm_construct(
 }
 \value{
 an object of class FuzzyMonetary containing the (fuzzy) membership function for each individual in the sample,
-the estimated expected value (`estimate`) of the function and the parameters of the
+the estimated expected value (\code{estimate}) of the function and the parameters of the
 membership functions (supplied or calculated). If breakdown is supplied it gives an output for each level.
 }
 \description{
-`fm_construct` constructs fuzzy monetary poverty estimates.
+\code{fm_construct} constructs fuzzy monetary poverty estimates.
 }
 \details{
 It implements the fuzzy set approach to monetary poverty measurement where
 the usual dichotomy poor (1) not-poor(0) is replaced with a continuum score in $(0,1)$
 }
 \examples{
-#The following examples are based on the dataset eusilc 
-#included in the package. 
+#The following examples are based on the dataset eusilc
+#included in the package.
 
 
 #fm = "verma"
@@ -81,97 +81,97 @@ the usual dichotomy poor (1) not-poor(0) is replaced with a continuum score in $
 fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              fm = "verma", HCR = 0.154, ID = eusilc$ID)
 
-#fm = "verma1999" 
+#fm = "verma1999"
 #In this example we set alpha=4.5
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              fm = "verma1999", alpha = 4.5, ID = eusilc$ID)
-             
-#fm = "TFR" 
+
+#fm = "TFR"
 #In this example we do not use the sample weights. alpha = 4.5
 
-fm_construct(predicate = eusilc$eq_income, 
+fm_construct(predicate = eusilc$eq_income,
              fm = "TFR", alpha = 4.5)
-             
-#fm = "belhadj2015" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+#fm = "belhadj2015"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              z1=100, z2=15000, b=2,
              fm = "belhadj2015")
-             
-#fm = "cerioli" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+#fm = "cerioli"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              z1=100, z2=10000, fm= "cerioli")
-             
-#fm = "belhadj2011" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+#fm = "belhadj2011"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              z_min=1000, z_max=8000, fm= "belhadj2011")
 
-#fm = "chakravarty" 
+#fm = "chakravarty"
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             z=8000, fm= "chakravarty")      
-             
-#fm = "ZBM" 
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             z=8000, fm= "chakravarty")
+
+#fm = "ZBM"
 #For this index have to use the household size
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             hh.size=eusilc$ncomp , fm= "ZBM")  
-             
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             hh.size=eusilc$ncomp , fm= "ZBM")
+
 #############'##########
-##Including breakdown##           
+##Including breakdown##
 #############'##########
 
 #fm = "verma"
 
 fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
-             fm = "verma", HCR = 0.154, ID = eusilc$ID, 
+             fm = "verma", HCR = 0.154, ID = eusilc$ID,
              breakdown = eusilc$db040)
 
-#fm = "verma1999" 
+#fm = "verma1999"
 #In this example we set alpha=4.5
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             fm = "verma1999", alpha = 4.5, ID = eusilc$ID, 
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             fm = "verma1999", alpha = 4.5, ID = eusilc$ID,
              breakdown = eusilc$db040)
-             
-#fm = "TFR" 
+
+#fm = "TFR"
 #In this example we do not use the sample weights. alpha = 4.5
 
-fm_construct(predicate = eusilc$eq_income, 
-             fm = "TFR", alpha = 4.5, 
+fm_construct(predicate = eusilc$eq_income,
+             fm = "TFR", alpha = 4.5,
              breakdown = eusilc$db040)
-             
-#fm = "belhadj2015" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+#fm = "belhadj2015"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              z1=100, z2=15000, b=2,
              fm = "belhadj2015", breakdown = eusilc$db040)
-             
-#fm = "cerioli" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
+#fm = "cerioli"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              z1=100, z2=10000, fm= "cerioli", breakdown = eusilc$db040)
-             
-#fm = "belhadj2011" 
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             z_min=1000, z_max=8000, fm= "belhadj2011", 
+#fm = "belhadj2011"
+
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             z_min=1000, z_max=8000, fm= "belhadj2011",
              breakdown = eusilc$db040)
 
-#fm = "chakravarty" 
+#fm = "chakravarty"
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             z=8000, fm= "chakravarty", breakdown = eusilc$db040)      
-             
-#fm = "ZBM" 
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             z=8000, fm= "chakravarty", breakdown = eusilc$db040)
+
+#fm = "ZBM"
 #For this index we have to use the household size
 
-fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090, 
-             hh.size=eusilc$ncomp , fm= "ZBM", 
-             breakdown = eusilc$db040) 
+fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
+             hh.size=eusilc$ncomp , fm= "ZBM",
+             breakdown = eusilc$db040)
 }
 \references{
 Belhadj, B. (2011). A new fuzzy unidimensional poverty index from an information theory perspective. Empirical Economics, 40(1):687–704.

@@ -1,5 +1,7 @@
 #' Fuzzy supplementary poverty estimation (all steps)
-#'  @description Step 1-7. Constructs the fuzzy supplementary poverty measure based without step-by-step functions.
+#'
+#' @description Step 1-7. Constructs the fuzzy supplementary poverty measure based without step-by-step functions.
+#'
 #' @param data A matrix or a data frame of identified items (see Step 1 of Betti et. al, 2018)
 #' @param weight A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)
 #' @param ID A numeric or character vector of IDs. if NULL (the default) it is set as the row sequence
@@ -14,11 +16,11 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' #This example is based on the dataset eusilc included in the package
 #' #The FS index is compute with breakdown and using an HCR = 0.12
-#' #with summary and plot 
-#' 
+#' #with summary and plot
+#'
 #' FS <- fs_construct_all(data = eusilc[,4:23], weight = eusilc$DB090, # step 2
 #'                        dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), # step 3
 #'                        rho = NULL, # steps 4 and 5
@@ -28,12 +30,13 @@
 #' plot(FS)
 #'
 #' @references
-#' 
+#'
 #'  Betti, G., & Verma, V. (2008). Fuzzy measures of the incidence of relative poverty and deprivation: a multi-dimensional perspective. Statistical Methods and Applications, 17, 225-250.
 #'
 #'  Betti, G., Gagliardi, F., Lemmi, A., & Verma, V. (2015). Comparative measures of multidimensional deprivation in the European Union. Empirical Economics, 49(3), 1071-1100.
 #'
 #'  Betti, G., Gagliardi, F., & Verma, V. (2018). Simplified Jackknife variance estimates for fuzzy measures of multidimensional poverty. International Statistical Review, 86(1), 68-86.
+#'
 #'
 fs_construct_all <- function(data, weight = NULL, ID = NULL,
                              dimensions, rho = NULL, HCR,

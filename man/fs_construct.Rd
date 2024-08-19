@@ -7,9 +7,9 @@
 fs_construct(steps4_5, weight, alpha, breakdown = NULL)
 }
 \arguments{
-\item{steps4_5}{The results from `fs_equate`.}
+\item{steps4_5}{The results from \code{fs_equate}.}
 
-\item{weight}{A numeric vector of sampling weights. if NULL weights will set equal to n (n = sample size)}
+\item{weight}{A numeric vector of sampling weights of length nrow(step1). if NULL weights will set equal to n (n = sample size)}
 
 \item{alpha}{The value of the exponent in the FM equation. If NULL it is calculated so that it equates the expectation of the membership function to HCR.}
 
@@ -28,7 +28,7 @@ Step 7. Constructs the fuzzy supplementary poverty measure based on Steps1-6.
 #The step 2-5 are the following (step 1 is the eusilc dataset)
 #For more on each step see the ad hoc function included in the package
 
-#Step 2 
+#Step 2
 
 step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
@@ -37,14 +37,14 @@ step2 = fs_transform(eusilc[,4:23], weight = eusilc$DB090, ID = eusilc$ID)
 
 dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5)
 
-#Step 4-5 finding weights 
+#Step 4-5 finding weights
 
 steps4_5 = fs_weight(dimensions, step2 = step2, rho = NULL)
 
 #Step 6 computation of alpha parameter
 
 alpha <- fs_equate(steps4_5 = steps4_5,
-                   weight = eusilc$DB090, HCR = 0.12, 
+                   weight = eusilc$DB090, HCR = 0.12,
                    interval = c(1,10))
 
 #Step 7 the FS index without breakdown

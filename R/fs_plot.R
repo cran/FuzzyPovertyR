@@ -11,10 +11,10 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' #This example is based on the dataset eusilc included in the package
 #' #The plot of the FS index is compute with breakdown and using an HCR = 0.12
-#' 
+#'
 #' FS <- fs_construct_all(data = eusilc[,4:23], weight = eusilc$DB090, # step 2
 #'                        dimensions = c(1,1,1,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5), # step 3
 #'                        rho = NULL, # steps 4 and 5
@@ -104,4 +104,3 @@ plot.FuzzySupplementary <- function(x,...){
   }
 
 }
-

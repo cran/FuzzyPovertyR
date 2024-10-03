@@ -1,13 +1,13 @@
-#' Fuzzy monetary poverty estimation
-#'
-#' @description This function calculates the fuzzy membership function as defined in Betti et. al, 2018.
-#'
-#' @param predicate.ord A sorted vector of a predicate variable (in ascending order).
-#' @param weight.ord A sorted vector of weights (in the same order of s.ord)
-#' @param alpha The value of the exponent parameter to use in the non-linear equation as of Betti et. al, 2018.
-#'
-#' @return A numeric vector containing the estimated membership function.
-#'
+# Fuzzy monetary poverty estimation
+#
+# @description This function calculates the fuzzy membership function as defined in Betti et. al, 2018.
+#
+# @param predicate.ord A sorted vector of a predicate variable (in ascending order).
+# @param weight.ord A sorted vector of weights (in the same order of s.ord)
+# @param alpha The value of the exponent parameter to use in the non-linear equation as of Betti et. al, 2018.
+#
+# @return A numeric vector containing the estimated membership function.
+#
 fm_mu <- function(predicate.ord, weight.ord, alpha){
 
   N = length(predicate.ord)

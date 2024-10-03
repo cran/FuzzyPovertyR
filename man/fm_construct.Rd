@@ -120,9 +120,9 @@ fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
 fm_construct(predicate = eusilc$eq_income, weight = eusilc$DB090,
              hh.size=eusilc$ncomp , fm= "ZBM")
 
-#############'##########
+#######################
 ##Including breakdown##
-#############'##########
+#######################
 
 #fm = "verma"
 

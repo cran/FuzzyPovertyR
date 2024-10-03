@@ -2,21 +2,29 @@
 % Please edit documentation in R/eq_predicate.R
 \name{eq_predicate}
 \alias{eq_predicate}
-\title{Fuzzy predicate poverty estimation}
+\title{Calculation of Equivalized Poverty Predicate}
 \usage{
-eq_predicate(predicate, ncomp, age, scale.eq, newscale)
+eq_predicate(
+  predicate,
+  ncomp,
+  age = NULL,
+  scale.eq = "modifiedOECD",
+  newscale,
+  data = NULL
+)
 }
 \arguments{
-\item{predicate}{A numeric vector representing the poverty predicate (i.e. income or expenditure)}
+\item{predicate}{A numeric vector  (or the variable name) representing the poverty predicate (i.e. income or expenditure)}
 
-\item{ncomp}{A numerical vector of the total number of components for the j-th family.}
+\item{ncomp}{A numerical vector (or the variable name) of the total number of components for the j-th family.}
 
-\item{age}{A numerical vector of the number of components for the j-th family less than 16 years-old}
+\item{age}{A numerical vector (or the variable name) of the number of components for the j-th family less than 16 years-old}
 
-\item{scale.eq}{The equivalence scale. Options are: Carbonaro, n.par (non parametric), OECD7050, modifiedOECD or new}
+\item{scale.eq}{The equivalence scale. Options are: "carbonaro", "n.par" (non parametric), "OECD7050", "modifiedOECD" (Default) or "new"}
 
-\item{newscale}{a data.frame with two columns: "ncomp"  defining the number of components and  "s.eq" that define the corresponding
-value of equivalent people. It is to define only if scale.eq ="new"}
+\item{newscale}{a data.frame with two columns: "ncomp"  defining the number of components and  "s.eq" that define the corresponding}
+
+\item{data}{An optional data frame containing the variables to be used}
 }
 \value{
 A data.frame containing the equivalised predicate variable.
@@ -27,27 +35,22 @@ using different equivalence scales.
 }
 \examples{
 
-pred=runif(100, 0, 1000) #predicate
 
-ncomp=rep(c(1,3,5,7,4),20)
+#Using OECD scale
 
-age16=ncomp-1
+eq_predicate(predicate = "HY022", ncomp = "ncomp", age = "age16",
+             scale.eq = "OECD7050", data = eusilc) #OECD7050
 
-eq_predicate(predicate=pred, ncomp=ncomp, scale.eq="carbonaro") #carbonaro
-
-eq_predicate(predicate=pred, ncomp=ncomp, scale.eq="n.par") #non-parametric
-
-eq_predicate(predicate=pred, ncomp=ncomp, age=age16, scale.eq="OECD7050") #OECD7050
-
-eq_predicate(predicate=pred, ncomp=ncomp, age=age16, scale.eq="modifiedOECD") #modifiedOECD
+eq_predicate(predicate = "HY022", ncomp = "ncomp", age = "age16",
+             scale.eq = "modifiedOECD", data = eusilc) #modifiedOECD
 
 #Define a new scale
 
-newscal=data.frame("ncomp"=c(1:9), "s.eq"=runif(9,1,10)) # new
+newscal <- data.frame("ncomp" = c(1:7), "s.eq" = runif(7,1,10) ) # new
 
-ncomp=rep(c(10,3,5,7,4),20)
 
-eq_predicate(predicate=pred, ncomp=ncomp,scale.eq="new", newscale=newscal)
+eq_predicate(predicate = "HY022", ncomp = "ncomp", scale.eq = "new",
+             newscale = newscal, data = eusilc)
 
 }
 \references{

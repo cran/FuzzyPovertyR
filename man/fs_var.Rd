@@ -21,6 +21,7 @@ fs_var(
   f = 0.01,
   Xs,
   total,
+  fixed = FALSE,
   verbose = TRUE
 )
 }
@@ -56,6 +57,8 @@ fs_var(
 \item{Xs}{A matrix (i x j) of calibration variables. i number of units, j number of variables}
 
 \item{total}{A Vector of population totals of dimension 1 x j}
+
+\item{fixed}{Whether the membership function needs to be re-calculated at each bootstrap or jackknife replicate (default is FALSE)}
 
 \item{verbose}{Logical. whether to print the proceeding of the variance estimation procedure}
 }

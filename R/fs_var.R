@@ -18,6 +18,7 @@
 #' @param f The finite population correction fraction (if 'jackknife' is chosen as variance estimation technique
 #' @param Xs A matrix (i x j) of calibration variables. i number of units, j number of variables
 #' @param total A Vector of population totals of dimension 1 x j
+#' @param fixed Whether the membership function needs to be re-calculated at each bootstrap or jackknife replicate (default is FALSE)
 #' @param verbose Logical. whether to print the proceeding of the variance estimation procedure
 #'
 #' @import sampling
@@ -53,13 +54,18 @@
 fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
                    breakdown = NULL, alpha, rho = NULL, type = 'bootstrap_naive',
                    R = 500, M = NULL, stratum, psu, f = 0.01,
-                   Xs, total, verbose = TRUE){
+                   Xs, total, fixed = FALSE, verbose = TRUE){
   if(!(type %in% c("bootstrap_naive","bootstrap_calibrated", "jackknife"))) stop("Select a variance estimation method from the list:  bootstrap_naive, bootstrap_calibrated, jackknife ")
   if(!is.null(breakdown)) breakdown <- as.factor(breakdown)
   N <- nrow(data)
   if(is.null(M)) M <- nrow(data)
   if(is.null(ID)) ID <- seq_len(N)
   if(is.null(weight)) weight <- rep(N, N)
+  if(fixed){
+    step2 <- fs_transform(data, weight, ID = ID)
+    step3 <- fs_weight(dimensions, step2, rho)
+    fs.mf <- fs_construct(step3, weight, alpha, breakdown)$membership
+  }
   switch(type,
          bootstrap_naive = {
            BootDistr <- lapply(1:R, function(x) {
@@ -68,13 +74,32 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
              ID.boot <- ID[bootidx]
              data.boot <- data[ID.boot,]
              weight.boot <- weight[ID.boot]
-             step2.boot <- fs_transform(data.boot, weight.boot, ID = NULL)
+             step2.boot <- fs_transform(data.boot, weight.boot)
              step3.boot <- fs_weight(dimensions, step2.boot, rho)
-             if(!is.null(breakdown)) {
-               breakdown.boot <- breakdown[ID.boot]
-               try(fs_construct(step3.boot, weight.boot, alpha, breakdown.boot)$estimate) # attenzione ai NA, tratto come 0
+             if(fixed){
+               mu.boot <- fs.mf$mu[ID.boot%in%fs.mf$ID]
+               weight.boot <- weight[ID.boot%in%fs.mf$ID]
+               if(!is.null(breakdown)){
+                 breakdown.boot <- breakdown[ID.boot]
+                 sapply(fs.mf, function(x) {
+                   mu.boot <- x$mu[ID.boot%in%x$ID]
+                   weight.boot <- x$weight[ID.boot%in%x$ID]
+                   tapply(data.frame(mu.boot, weight.boot, breakdown.boot), ~breakdown.boot, function(x) weighted.mean(x$mu.boot, x$weight.boot))
+                 })
+               } else {
+                 sapply(fs.mf, function(x) {
+                   mu.boot <- x$mu[ID.boot%in%x$ID]
+                   weight.boot <- x$weight[ID.boot%in%x$ID]
+                   weighted.mean(x = mu.boot, w = weight.boot)
+                 })
+               }
              } else {
-               try(fs_construct(step3.boot, weight.boot, alpha))$estimate # attenzione ai NA, tratto come 0
+               if(!is.null(breakdown)) {
+                 breakdown.boot <- breakdown[ID.boot]
+                 try(fs_construct(step3.boot, weight.boot, alpha, breakdown.boot)$estimate) # attenzione ai NA, tratto come 0
+               } else {
+                 try(fs_construct(step3.boot, weight.boot, alpha))$estimate # attenzione ai NA, tratto come 0
+               }
              }
            })
 
@@ -105,11 +130,28 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
              weight.boot <- sampling::calib(Xs = Xs, d = weight[bootidx], total = total, method = "linear")
              step2.boot <- fs_transform(data.boot, weight.boot, ID = NULL)
              step3.boot <- fs_weight(dimensions, step2.boot, rho)
-             if(!is.null(breakdown)) {
-               breakdown.boot <- breakdown[ID.boot]
-               try(fs_construct(step3.boot, weight.boot, alpha, breakdown.boot)$estimate) # attenzione ai NA, tratto come 0
+             if(fixed){
+               mu.boot <- fs.mf$mu[ID.boot%in%fs.mf$ID]
+               weight.boot <- weight[ID.boot%in%fs.mf$ID]
+               if(!is.null(breakdown)){
+                 breakdown.boot <- breakdown[ID.boot]
+                 sapply(fs.mf, function(x) {
+                   mu.boot <- x$mu[ID.boot%in%x$ID]
+                   tapply(data.frame(mu.boot, weight.boot, breakdown.boot), ~breakdown.boot, function(x) weighted.mean(x$mu.boot, x$weight.boot))
+                 })
+               } else {
+                 sapply(fs.mf, function(x) {
+                   mu.boot <- x$mu[ID.boot%in%x$ID]
+                   weighted.mean(x = mu.boot, w = weight.boot)
+                 })
+               }
              } else {
-               try(fs_construct(step3.boot, weight.boot, alpha))$estimate # attenzione ai NA, tratto come 0
+               if(!is.null(breakdown)) {
+                 breakdown.boot <- breakdown[ID.boot]
+                 try(fs_construct(step3.boot, weight.boot, alpha, breakdown.boot)$estimate) # attenzione ai NA, tratto come 0
+               } else {
+                 try(fs_construct(step3.boot, weight.boot, alpha))$estimate # attenzione ai NA, tratto come 0
+               }
              }
            })
 
@@ -174,11 +216,25 @@ fs_var <- function(data, weight = NULL, ID = NULL, dimensions, HCR,
                if(!is.null(breakdown)){
                  breakdown.jack <- breakdown[delete.idx]
                  step7.jack <- fs_construct(step3.jack, weight.jack, alpha, breakdown.jack)$estimate # attenzione ai NA, tratto come 0
-                 z_hi[,,i] <- step7.jack
+                 if(fixed){
+                   z_hi[,,i] <- sapply(fs.mf, function(x) {
+                     mu.jack <- x$mu[delete.idx]
+                     tapply(data.frame(mu.jack, weight.jack, breakdown.jack), ~breakdown.jack, function(x) weighted.mean(x$mu.jack, x$weight.jack))
+                   })
+                 } else {
+                   z_hi[,,i] <- step7.jack
+                 }
                  g_hi.mat <- array(g_hi, dim = c(a_h, P+1, J))
                } else {
+                 if(fixed){
+                   z_hi[i,] <- sapply(fs.mf, function(x) {
+                     mu.jack <- x$mu[delete.idx]
+                     weighted.mean(x = mu.jack, w = weight.jack)
+                   })
+                 } else {
                  step7.jack <- fs_construct(step3.jack, weight.jack, alpha)$estimate # attenzione ai NA, tratto come 0
                  z_hi[i,] <- step7.jack
+                 }
                }
              }
 

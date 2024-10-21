@@ -5,7 +5,7 @@
 #'
 #' @param predicate A numeric vector  (or the variable name) representing the poverty predicate (i.e. income or expenditure)
 #' @param ncomp A numerical vector (or the variable name) of the total number of components for the j-th family.
-#' @param age A numerical vector (or the variable name) of the number of components for the j-th family less than 16 years-old
+#' @param age A numerical vector (or the variable name) of the number of components for the j-th family less than 16 years-old to be defined only for OECD scales
 #' @param scale.eq The equivalence scale. Options are: "carbonaro", "n.par" (non parametric), "OECD7050", "modifiedOECD" (Default) or "new"
 #' @param newscale a data.frame with two columns: "ncomp"  defining the number of components and  "s.eq" that define the corresponding
 # value of equivalent people. It is to define only if scale.eq ="new"

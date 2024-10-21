@@ -29,6 +29,7 @@ fm_var(
   Xs,
   total,
   breakdown = NULL,
+  fixed = FALSE,
   data = NULL
 )
 }
@@ -81,6 +82,8 @@ fm_var(
 
 \item{breakdown}{A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor}
 
+\item{fixed}{Whether the membership function needs to be re-calculated at each bootstrap or jackknife replicate (default is FALSE)}
+
 \item{data}{An optional data frame containing the variables to be used}
 }
 \value{
@@ -98,7 +101,7 @@ This function estimates the variance of the fuzzy monetary poverty index
 #fm = "verma"
 
 fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
-       fm = "verma", breakdown = eusilc$db040, type = "bootstrap_calibrated",
+       fm = "verma", breakdown = NULL, type = "bootstrap_calibrated",
        alpha = 4, Xs = eusilc[,4:6], total = c(20, 30, 40))
 
 #fm = "belhadj2015"

@@ -18,7 +18,7 @@ eq_predicate(
 
 \item{ncomp}{A numerical vector (or the variable name) of the total number of components for the j-th family.}
 
-\item{age}{A numerical vector (or the variable name) of the number of components for the j-th family less than 16 years-old}
+\item{age}{A numerical vector (or the variable name) of the number of components for the j-th family less than 16 years-old to be defined only for OECD scales}
 
 \item{scale.eq}{The equivalence scale. Options are: "carbonaro", "n.par" (non parametric), "OECD7050", "modifiedOECD" (Default) or "new"}
 

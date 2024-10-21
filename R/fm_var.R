@@ -26,6 +26,7 @@
 #' @param Xs A matrix (i x j) of calibration variables. i number of units, j number of variables
 #' @param total A Vector of population totals of dimension 1 x j
 #' @param breakdown A factor of sub-domains to calculate estimates for (using the same alpha). If numeric will be coerced to a factor
+#' @param fixed Whether the membership function needs to be re-calculated at each bootstrap or jackknife replicate (default is FALSE)
 #' @param data An optional data frame containing the variables to be used
 #'
 #' @import sampling
@@ -40,7 +41,7 @@
 #' #fm = "verma"
 #'
 #' fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090,
-#'        fm = "verma", breakdown = eusilc$db040, type = "bootstrap_calibrated",
+#'        fm = "verma", breakdown = NULL, type = "bootstrap_calibrated",
 #'        alpha = 4, Xs = eusilc[,4:6], total = c(20, 30, 40))
 #'
 #' #fm = "belhadj2015"
@@ -101,6 +102,7 @@ fm_var <- function(predicate, weight,
                    z,
                    Xs, total,
                    breakdown = NULL,
+                   fixed = FALSE,
                    data = NULL) {
   if(!is.null(data)){
     predicate <- data[[predicate]]
@@ -110,7 +112,7 @@ fm_var <- function(predicate, weight,
     ID <- data[[ID]]
   }
   if(!(type %in% c("bootstrap_naive","bootstrap_calibrated", "jackknife"))) stop("Select a variance estimation method from the list: bootstrap_naive, bootstrap_calibrated, jackknife ")
-
+  if(fixed & fm == "ZBM") stop("For ZBM you must specify fixed = FALSE")
   N <- length(predicate)
   if(is.null(weight)) weight <- rep(N, N)
   if(is.null(ID)) ID <- seq_len(N)
@@ -119,22 +121,33 @@ fm_var <- function(predicate, weight,
   if(fm=="ZBM") k <- 3
   switch(type, # creare funzione bootstrap e funzione jackknife da chiamare qui invece che codificarle
          bootstrap_naive = {
+           if(fixed) mf <- fm_construct(predicate, weight, fm, ID, HCR, interval, alpha, hh.size, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$results
            BootDistr <- sapply(1:R, function(r) {
              if(verbose == TRUE) {
                if(R%%100==0) cat('Bootstrap Replicate : ', r, 'of', R, '\n')
              }
              bootidx <- sample(1:N, size = M, replace = T)
              ID.boot <- ID[bootidx]
-             predicate.boot <- predicate[bootidx]
-             weight.boot <- weight[bootidx]
-             if(!is.null(breakdown)) breakdown <- breakdown[bootidx]
-             if(fm=="ZBM") {
-               hh.size.boot <- hh.size[bootidx]
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
+             if(fixed) {
+               mu.boot <- mf$mu[ID.boot%in%mf$ID]
+               weight.boot <- mf$weight[ID.boot%in%mf$ID]
+               if(!is.null(breakdown)) {
+                 breakdown <- breakdown[bootidx]
+                 tapply(data.frame(mu.boot, weight.boot, breakdown), ~ breakdown, function(x) weighted.mean(x$mu.boot, x$weight.boot))
+               } else {
+                 weighted.mean(mu.boot, w = weight.boot)
+               }
              } else {
-               try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
+               predicate.boot <- predicate[bootidx]
+               weight.boot <- weight[bootidx]
+               if(!is.null(breakdown)) breakdown <- breakdown[bootidx]
+               if(fm=="ZBM") {
+                 hh.size.boot <- hh.size[bootidx]
+                 try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
+               } else {
+                 try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
+               }
              }
-
            }, simplify = "array")
            if(!is.null(breakdown)){
              if (fm=="ZBM") {
@@ -148,12 +161,23 @@ fm_var <- function(predicate, weight,
            }
          },
          bootstrap_calibrated = {
+           if(fixed) mf <- fm_construct(predicate, weight, fm, ID, HCR, interval, alpha, hh.size, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$results
            BootDistr <- sapply(1:R, function(r) {
              if(verbose == TRUE) {
                if(R%%100==0) cat('Bootstrap Replicate : ', r, 'of', R, '\n')
              }
              bootidx <- sample(1:N, size = M, replace = T)
              ID.boot <- ID[bootidx]
+             if(fixed) {
+               mu.boot <- mf$mu[ID.boot%in%mf$ID]
+               weight.boot <- sampling::calib(Xs = Xs, d = weight[bootidx], total = total, method = "linear")
+               if(!is.null(breakdown)) {
+                 breakdown <- breakdown[bootidx]
+                 tapply(data.frame(mu.boot, weight.boot, breakdown), ~ breakdown, function(x) weighted.mean(x$mu.boot, x$weight.boot))
+               } else {
+                 weighted.mean(mu.boot, w = weight.boot)
+               }
+             } else {
              predicate.boot <- predicate[bootidx]
              weight.boot <- sampling::calib(Xs = Xs, d = weight[bootidx], total = total, method = "linear")
              if(!is.null(breakdown)) breakdown <- breakdown[bootidx]
@@ -163,7 +187,7 @@ fm_var <- function(predicate, weight,
              } else {
                try(fm_construct(predicate.boot, weight.boot, fm, ID.boot, HCR, interval, alpha, hh.size.boot, z_min, z_max, z1, z2, b, z, breakdown, data = NULL)$estimate)
              }
-
+}
            }, simplify = "array")
            if(!is.null(breakdown)){
              if (fm=="ZBM") {
@@ -177,6 +201,7 @@ fm_var <- function(predicate, weight,
            }
          },
          jackknife = {
+           if(fixed) mf <- fm_construct(predicate, weight, fm, ID, HCR, interval, alpha, hh.size, z_min, z_max, z1, z2, b, z, breakdown, data)$estimate
            tab <- data.frame(table(stratum, psu))
            a <- tapply(tab$Freq, tab$stratum, sum)
            if(any(a<2)) stop("There should be at least 2 PSUs in each stratum")
@@ -217,10 +242,18 @@ fm_var <- function(predicate, weight,
                  if(fm=="ZBM") {
                    z_hi[,,i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z, breakdown[delete.idx], data)$estimate
                  } else{
-                   z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z, breakdown[delete.idx], data)$estimate
+                   if(fixed) {
+                     z_hi[[i]] <- tapply(data.frame(mu = mf$mu[delete.idx], w = w[delete.idx], breakdown = breakdown[delete.idx]), ~ breakdown, function(x) weighted.mean(x$mu, x$w))}
+                   else {
+                     z_hi[[i]] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z, breakdown[delete.idx], data)$estimate
+                   }
                  }
                } else {
+                 if(fixed){
+                   z_hi[i] <- weighted.mean(mf$mu[delete.idx], w[delete.idx])
+                 } else {
                  z_hi[i] <- fm_construct(predicate[delete.idx], w[delete.idx], fm, ID[delete.idx], HCR, interval, alpha, hh.size[delete.idx], z_min, z_max, z1, z2, b, z)$estimate
+                 }
                }
              }
 

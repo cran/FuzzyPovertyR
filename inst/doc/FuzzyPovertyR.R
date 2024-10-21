@@ -175,17 +175,21 @@ plot(Bootstrap)
 Bootstrap = fm_var(predicate = eusilc$eq_income, weight = eusilc$DB090, fm = "verma", breakdown = eusilc$db040, type = "jackknife", HCR = hcr, alpha = alpha, stratum = eusilc$stratum, psu = eusilc$psu, verbose = F)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  variance = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions, breakdown = NULL, HCR = 0.12, alpha = 2, rho = NULL, type = 'bootstrap', M = NULL, R = 2, verbose = F)
+#  variance = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL,
+#                    dimensions = dimensions, breakdown = NULL, HCR = 0.12,
+#                    alpha = 2, rho = NULL, type = 'bootstrap_naive',
+#                    M = NULL, R = 50, verbose = F)
 #  summary(variance)
 
 ## ----echo=FALSE, fig.height=6, fig.width=6------------------------------------
 Bootstrap = fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, 
                   dimensions = dimensions, breakdown = eusilc$db040, HCR = .12,
-                   alpha = 2, rho = NULL, type = 'bootstrap_naive', M = NULL, R = 10, verbose = F) 
+                   alpha = 2, rho = NULL, 
+                  type = 'bootstrap_naive', M = NULL, R = 10, verbose = F) 
 plot(Bootstrap)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  fs_var(data = eusilc[,4:23], weight = eusilc$DB090, ID = NULL, dimensions = dimensions,
 #         stratum = eusilc$stratum, psu = eusilc$psu, verbose = F, f = .01,
-#         breakdown = eusilc$db040, alpha = 3, rho = NULL, type = "jackknife")%>%summary()
+#         breakdown = NULL, alpha = 3, rho = NULL, type = "jackknife", fixed = T)%>%summary()
 
